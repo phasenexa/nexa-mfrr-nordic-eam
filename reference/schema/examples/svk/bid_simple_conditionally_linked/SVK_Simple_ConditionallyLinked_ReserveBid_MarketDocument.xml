@@ -1,0 +1,130 @@
+<?xml version="1.0" ?>
+<!-- SVK example updated 2022.02.07 -->
+<ReserveBid_MarketDocument xmlns="urn:iec62325.351:tc57wg16:451-7:reservebiddocument:7:2">
+	<mRID>1415d616-0f55-4d0d-b428-f964bb89954c</mRID>
+	<revisionNumber>1</revisionNumber>
+	<type>A37</type>
+	<process.processType>A47</process.processType>
+	<sender_MarketParticipant.mRID codingScheme="NSE">99999</sender_MarketParticipant.mRID> <!-- Synthetic BSPID -->
+	<sender_MarketParticipant.marketRole.type>A46</sender_MarketParticipant.marketRole.type>
+	<receiver_MarketParticipant.mRID codingScheme="A01">10X1001A1001A418</receiver_MarketParticipant.mRID>
+	<receiver_MarketParticipant.marketRole.type>A34</receiver_MarketParticipant.marketRole.type>
+	<createdDateTime>2022-02-03T08:31:05Z</createdDateTime>
+	<reserveBid_Period.timeInterval>
+		<start>2022-02-03T22:15Z</start>
+		<end>2022-02-03T23:00Z</end>
+	</reserveBid_Period.timeInterval>
+	<domain.mRID codingScheme="A01">10YSE-1--------K</domain.mRID>
+	<subject_MarketParticipant.mRID codingScheme="NSE">99999</subject_MarketParticipant.mRID> <!-- Synthetic BSPID -->
+	<subject_MarketParticipant.marketRole.type>A46</subject_MarketParticipant.marketRole.type>
+	<Bid_TimeSeries>
+		<mRID>985f486d-e1f7-4b09-8cd8-6d462ded0537</mRID>
+		<auction.mRID>MFRR_ENERGY_ACTIVATION_MARKET</auction.mRID>
+		<businessType>B74</businessType>
+		<acquiring_Domain.mRID codingScheme="A01">10Y1001A1001A91G</acquiring_Domain.mRID> <!-- Nordic Market Ares -->
+		<connecting_Domain.mRID codingScheme="A01">10Y1001A1001A44P</connecting_Domain.mRID> <!-- All linked bids must be in the same bidding area-->
+		<quantity_Measure_Unit.name>MAW</quantity_Measure_Unit.name>
+		<currency_Unit.name>EUR</currency_Unit.name>
+		<divisible>A01</divisible>
+		<status>
+			<value>A06</value> <!-- Available -->
+		</status>
+		<registeredResource.mRID codingScheme="NSE">ZZZ</registeredResource.mRID> <!-- Synthetic Registered resource ID -->
+		<flowDirection.direction>A01</flowDirection.direction>
+		<energyPrice_Measure_Unit.name>MWH</energyPrice_Measure_Unit.name>
+		<standard_MarketProduct.marketProductType>A07</standard_MarketProduct.marketProductType>
+		<Period>
+			<timeInterval>
+				<start>2022-02-03T22:15Z</start>
+				<end>2022-02-03T22:30Z</end>
+				</timeInterval>
+			<resolution>PT15M</resolution>
+			<Point>
+				<position>1</position>
+				<quantity.quantity>71</quantity.quantity>
+				<minimum_Quantity.quantity>30</minimum_Quantity.quantity>
+				<energy_Price.amount>93.57</energy_Price.amount>
+			</Point>
+		</Period>
+	</Bid_TimeSeries>
+	<Bid_TimeSeries>
+		<mRID>613fc2e0-81ad-49a0-9b90-c963222bf8bb</mRID>
+		<auction.mRID>MFRR_ENERGY_ACTIVATION_MARKET</auction.mRID>
+		<businessType>B74</businessType>
+		<acquiring_Domain.mRID codingScheme="A01">10Y1001A1001A91G</acquiring_Domain.mRID>
+		<connecting_Domain.mRID codingScheme="A01">10Y1001A1001A44P</connecting_Domain.mRID> <!-- All linked bids must be in the same bidding area-->
+		<quantity_Measure_Unit.name>MAW</quantity_Measure_Unit.name>
+		<currency_Unit.name>EUR</currency_Unit.name>
+		<divisible>A01</divisible>
+		<status>
+			<value>A66</value> <!-- Conditionally unavailable -->
+		</status>
+		<registeredResource.mRID codingScheme="NSE">ZZZ</registeredResource.mRID>
+		<flowDirection.direction>A01</flowDirection.direction>
+		<energyPrice_Measure_Unit.name>MWH</energyPrice_Measure_Unit.name>
+		<standard_MarketProduct.marketProductType>A05</standard_MarketProduct.marketProductType>
+		<Period>
+			<timeInterval>
+				<start>2022-02-03T22:30Z</start>
+				<end>2022-02-03T22:45Z</end>
+			</timeInterval>
+			<resolution>PT15M</resolution>
+			<Point>
+				<position>1</position>
+				<quantity.quantity>30</quantity.quantity>
+				<minimum_Quantity.quantity>0</minimum_Quantity.quantity>
+				<energy_Price.amount>45.06</energy_Price.amount>
+			</Point>
+		</Period>
+		<!-- Conditional link to bid in the previous MTU. The condition in this example controls the availablility of this bid. -->
+		<Linked_BidTimeSeries>
+			<mRID>985f486d-e1f7-4b09-8cd8-6d462ded0537</mRID> <!-- mRID of linked bid -->
+			<status>
+				<value>A67</value> <!-- A67 - a condition; if the linked bid is activated, this bid becomes available. -->
+			</status>
+		</Linked_BidTimeSeries>
+	</Bid_TimeSeries>
+	<Bid_TimeSeries>
+		<mRID>76cc77e4-2ad9-4fc9-ae45-62c77d0c9a1c</mRID>
+		<auction.mRID>MFRR_ENERGY_ACTIVATION_MARKET</auction.mRID>
+		<businessType>B74</businessType>
+		<acquiring_Domain.mRID codingScheme="A01">10Y1001A1001A91G</acquiring_Domain.mRID>
+		<connecting_Domain.mRID codingScheme="A01">10Y1001A1001A44P</connecting_Domain.mRID> <!-- All linked bids must be in the same bidding area-->
+		<quantity_Measure_Unit.name>MAW</quantity_Measure_Unit.name>
+		<currency_Unit.name>EUR</currency_Unit.name>
+		<divisible>A01</divisible>
+		<status>
+			<value>A65</value> <!-- Conditionally available -->
+		</status>
+		<registeredResource.mRID codingScheme="NSE">ZZZ</registeredResource.mRID>
+		<flowDirection.direction>A01</flowDirection.direction>
+		<energyPrice_Measure_Unit.name>MWH</energyPrice_Measure_Unit.name>
+		<standard_MarketProduct.marketProductType>A07</standard_MarketProduct.marketProductType>
+		<Period>
+			<timeInterval>
+				<start>2022-02-03T22:45Z</start>
+				<end>2022-02-03T23:00Z</end>
+			</timeInterval>
+			<resolution>PT15M</resolution>
+			<Point>
+				<position>1</position>
+				<quantity.quantity>30</quantity.quantity>
+				<minimum_Quantity.quantity>0</minimum_Quantity.quantity>
+				<energy_Price.amount>45.06</energy_Price.amount>
+			</Point>
+		</Period>
+		<!-- Conditional links to bids in the two previous MTUs. Both conditions in this example controls the availability of this bid. -->
+		<Linked_BidTimeSeries>
+			<mRID>985f486d-e1f7-4b09-8cd8-6d462ded0537</mRID> <!-- mRID of linked bid -->
+			<status>
+				<value>A55</value> <!-- A55 - a condition; if the linked bid is activated, this bid becomes unavailable. -->
+			</status>
+		</Linked_BidTimeSeries>
+		<Linked_BidTimeSeries>
+			<mRID>613fc2e0-81ad-49a0-9b90-c963222bf8bb</mRID> <!-- mRID of linked bid -->
+			<status>
+				<value>A56</value> <!-- A56 - a condition; if the linked bid is not activated, this bid becomes unavailable. -->
+			</status>
+		</Linked_BidTimeSeries>
+	</Bid_TimeSeries>
+</ReserveBid_MarketDocument>

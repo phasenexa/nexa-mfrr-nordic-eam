@@ -1,0 +1,19 @@
+<?xml version="1.0" ?>
+<!-- Statnett example file - updated 14.02.2022-->
+<Acknowledgement_MarketDocument xmlns="urn:iec62325.351:tc57wg16:451-1:acknowledgementdocument:8:1">
+    <mRID>412b458a-1a63-461b-821e-21d3d49f7d69</mRID>
+    <createdDateTime>2022-01-04T09:42:37Z</createdDateTime>
+    <sender_MarketParticipant.mRID codingScheme="A01">10X1001A1001A38Y</sender_MarketParticipant.mRID>
+    <sender_MarketParticipant.marketRole.type>A34</sender_MarketParticipant.marketRole.type>
+    <receiver_MarketParticipant.mRID codingScheme="A10">9999909919920</receiver_MarketParticipant.mRID>
+    <receiver_MarketParticipant.marketRole.type>A46</receiver_MarketParticipant.marketRole.type>
+    <received_MarketDocument.mRID>e8c4962e-9abf-4be2-9606-eade69506fc7</received_MarketDocument.mRID>
+    <received_MarketDocument.revisionNumber>1</received_MarketDocument.revisionNumber>
+    <received_MarketDocument.type>A37</received_MarketDocument.type>
+    <received_MarketDocument.process.processType>A47</received_MarketDocument.process.processType>
+    <received_MarketDocument.createdDateTime>2022-01-05T07:49:12Z</received_MarketDocument.createdDateTime>
+    <Reason>
+        <code>A01</code>
+        <text>Message fully accepted.</text>
+    </Reason>
+</Acknowledgement_MarketDocument>

@@ -1,0 +1,40 @@
+<?xml version="1.0" ?>
+<!-- Statnett example file - updated 14.02.2022-->
+<Acknowledgement_MarketDocument xmlns="urn:iec62325.351:tc57wg16:451-1:acknowledgementdocument:8:1">
+    <mRID>6a46dbc5-bcac-4a04-a885-acc6b674eada</mRID>
+    <createdDateTime>2022-02-14T13:04:57Z</createdDateTime>
+    <sender_MarketParticipant.mRID codingScheme="A01">10X1001A1001A38Y</sender_MarketParticipant.mRID>
+    <sender_MarketParticipant.marketRole.type>A34</sender_MarketParticipant.marketRole.type>
+    <receiver_MarketParticipant.mRID codingScheme="A10">7080003195234</receiver_MarketParticipant.mRID>
+    <receiver_MarketParticipant.marketRole.type>A46</receiver_MarketParticipant.marketRole.type>
+    <received_MarketDocument.mRID>783ae5d5-4a2b-4024-9867-596b09822ea6</received_MarketDocument.mRID>
+    <received_MarketDocument.revisionNumber>1</received_MarketDocument.revisionNumber>
+    <received_MarketDocument.type>A37</received_MarketDocument.type>
+    <received_MarketDocument.process.processType>A47</received_MarketDocument.process.processType>
+    <received_MarketDocument.createdDateTime>2022-02-14T12:32:20Z</received_MarketDocument.createdDateTime>
+    <Rejected_TimeSeries>
+        <mRID>7f224225-667e-406a-9274-3a41e671aa78</mRID>
+        <Reason>
+            <code>999</code>
+            <text>Minimum quantity required for divisible bids</text>
+        </Reason>
+    </Rejected_TimeSeries>
+    <Rejected_TimeSeries>
+        <mRID>9e3a09d6-525a-43fb-959a-42d14c8eb2bf</mRID>
+        <Reason>
+            <code>999</code>
+            <text>Minimum quantity required for divisible bids</text>
+        </Reason>
+    </Rejected_TimeSeries>
+    <Rejected_TimeSeries>
+        <mRID>710fd9c0-f992-4d87-9675-db41bcc27f2e</mRID>
+        <Reason>
+            <code>999</code>
+            <text>Minimum quantity required for divisible bids</text>
+        </Reason>
+    </Rejected_TimeSeries>
+    <Reason>
+        <code>A02</code>
+        <text>Message fully rejected.</text>
+    </Reason>
+</Acknowledgement_MarketDocument>

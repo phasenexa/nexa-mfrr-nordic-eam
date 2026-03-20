@@ -1,0 +1,151 @@
+<?xml version="1.0" ?>
+<!-- SVK example file - updated 2022.01.04-->
+<ReserveBid_MarketDocument xmlns="urn:iec62325.351:tc57wg16:451-7:reservebiddocument:7:2">
+    <mRID>1c4c3ed1-99c9-41fd-b925-680ef553743a</mRID>
+    <revisionNumber>1</revisionNumber>
+    <type>A37</type>
+    <process.processType>A47</process.processType>
+    <sender_MarketParticipant.mRID codingScheme="NSE">99999</sender_MarketParticipant.mRID> <!-- Synthetic BSPID -->
+    <sender_MarketParticipant.marketRole.type>A46</sender_MarketParticipant.marketRole.type>
+    <receiver_MarketParticipant.mRID codingScheme="A01">10X1001A1001A418</receiver_MarketParticipant.mRID>
+    <receiver_MarketParticipant.marketRole.type>A34</receiver_MarketParticipant.marketRole.type>
+    <createdDateTime>2022-01-04T11:15:00Z</createdDateTime>
+    <reserveBid_Period.timeInterval>
+        <start>2022-01-04T23:00Z</start>
+        <end>2022-01-05T23:00Z</end>
+    </reserveBid_Period.timeInterval>
+    <domain.mRID codingScheme="A01">10YSE-1--------K</domain.mRID>
+    <subject_MarketParticipant.mRID codingScheme="NSE">99999</subject_MarketParticipant.mRID> <!-- Synthetic BSPID -->
+    <subject_MarketParticipant.marketRole.type>A46</subject_MarketParticipant.marketRole.type>
+    <Bid_TimeSeries>
+        <mRID>72670f04-1d01-446a-93e3-45f827a02d07</mRID>
+        <auction.mRID>MFRR_ENERGY_ACTIVATION_MARKET</auction.mRID>
+        <businessType>B74</businessType>
+        <acquiring_Domain.mRID codingScheme="A01">10Y1001A1001A91G</acquiring_Domain.mRID>
+        <connecting_Domain.mRID codingScheme="A01">10Y1001A1001A44P</connecting_Domain.mRID> <!-- Same bidding area as other linked bids -->
+        <quantity_Measure_Unit.name>MAW</quantity_Measure_Unit.name>
+        <currency_Unit.name>EUR</currency_Unit.name>
+        <divisible>A02</divisible>
+        <linkedBidsIdentification>a9ad87db-8f82-4459-bfd1-b606432ce386</linkedBidsIdentification> <!-- Must be technically linked when maximum duration/resting time are defined. Proper UUID  -->
+        <status>
+            <value>A06</value>
+        </status>
+        <registeredResource.mRID codingScheme="NSE">ZZZ</registeredResource.mRID> <!-- Synthetic resource object -->
+        <flowDirection.direction>A01</flowDirection.direction>
+        <energyPrice_Measure_Unit.name>MWH</energyPrice_Measure_Unit.name>
+        <resting_ConstraintDuration.duration>PT30M</resting_ConstraintDuration.duration> <!-- Minimum resting time - same as the other linked bids. Divisible by 15 -->
+        <maximum_ConstraintDuration.duration>PT15M</maximum_ConstraintDuration.duration> <!-- Maximum duration - same as the other linked bids. Divisible by 15 -->
+        <standard_MarketProduct.marketProductType>A07</standard_MarketProduct.marketProductType>
+        <Period>
+            <timeInterval>
+                <start>2022-01-05T10:00Z</start>
+                <end>2022-01-05T10:15Z</end>
+            </timeInterval>
+            <resolution>PT15M</resolution>
+            <Point>
+                <position>1</position>
+                <quantity.quantity>26</quantity.quantity>
+                <energy_Price.amount>41.33</energy_Price.amount>
+            </Point>
+        </Period>
+    </Bid_TimeSeries>
+    <Bid_TimeSeries>
+        <mRID>65c91186-dc7f-4e5b-9919-e838446b345c</mRID>
+        <auction.mRID>MFRR_ENERGY_ACTIVATION_MARKET</auction.mRID>
+        <businessType>B74</businessType>
+        <acquiring_Domain.mRID codingScheme="A01">10Y1001A1001A91G</acquiring_Domain.mRID>
+        <connecting_Domain.mRID codingScheme="A01">10Y1001A1001A44P</connecting_Domain.mRID>
+        <quantity_Measure_Unit.name>MAW</quantity_Measure_Unit.name>
+        <currency_Unit.name>EUR</currency_Unit.name>
+        <divisible>A01</divisible>
+        <linkedBidsIdentification>a9ad87db-8f82-4459-bfd1-b606432ce386</linkedBidsIdentification> <!-- Must be technically linked when maximum duration/resting time are defined. Proper UUID  -->
+        <status>
+            <value>A06</value>
+        </status>
+        <registeredResource.mRID codingScheme="NSE">ZZZ</registeredResource.mRID>
+        <flowDirection.direction>A01</flowDirection.direction>
+        <energyPrice_Measure_Unit.name>MWH</energyPrice_Measure_Unit.name>
+        <resting_ConstraintDuration.duration>PT30M</resting_ConstraintDuration.duration> <!-- Minimum resting time - same as the other linked bids. Divisible by 15 -->
+        <maximum_ConstraintDuration.duration>PT15M</maximum_ConstraintDuration.duration> <!-- Maximum duration - same as the other linked bids. Divisible by 15 -->
+        <standard_MarketProduct.marketProductType>A07</standard_MarketProduct.marketProductType>
+        <Period>
+            <timeInterval>
+                <start>2022-01-05T10:15Z</start>
+                <end>2022-01-05T10:30Z</end>
+            </timeInterval>
+            <resolution>PT15M</resolution>
+            <Point>
+                <position>1</position>
+                <quantity.quantity>26</quantity.quantity>
+                <minimum_Quantity.quantity>6</minimum_Quantity.quantity>
+                <energy_Price.amount>41.33</energy_Price.amount>
+            </Point>
+        </Period>
+    </Bid_TimeSeries>
+    <Bid_TimeSeries>
+        <mRID>ab0fc2c8-1250-4bcf-a1a2-00e838cf6683</mRID>
+        <auction.mRID>MFRR_ENERGY_ACTIVATION_MARKET</auction.mRID>
+        <businessType>B74</businessType>
+        <acquiring_Domain.mRID codingScheme="A01">10Y1001A1001A91G</acquiring_Domain.mRID>
+        <connecting_Domain.mRID codingScheme="A01">10Y1001A1001A44P</connecting_Domain.mRID>
+        <quantity_Measure_Unit.name>MAW</quantity_Measure_Unit.name>
+        <currency_Unit.name>EUR</currency_Unit.name>
+        <divisible>A01</divisible>
+        <linkedBidsIdentification>a9ad87db-8f82-4459-bfd1-b606432ce386</linkedBidsIdentification> <!-- Must be technically linked when maximum duration/resting time are defined. Proper UUID  -->
+        <status>
+            <value>A06</value>
+        </status>
+        <registeredResource.mRID codingScheme="NSE">ZZZ</registeredResource.mRID>
+        <flowDirection.direction>A01</flowDirection.direction>
+        <energyPrice_Measure_Unit.name>MWH</energyPrice_Measure_Unit.name>
+        <resting_ConstraintDuration.duration>PT30M</resting_ConstraintDuration.duration> <!-- Minimum resting time - same as the other linked bids. Divisible by 15 -->
+        <maximum_ConstraintDuration.duration>PT15M</maximum_ConstraintDuration.duration> <!-- Maximum duration - same as the other linked bids. Divisible by 15 -->
+        <standard_MarketProduct.marketProductType>A07</standard_MarketProduct.marketProductType>
+        <Period>
+            <timeInterval>
+                <start>2022-01-05T10:30Z</start>
+                <end>2022-01-05T10:45Z</end>
+            </timeInterval>
+            <resolution>PT15M</resolution>
+            <Point>
+                <position>1</position>
+                <quantity.quantity>26</quantity.quantity>
+                <minimum_Quantity.quantity>14</minimum_Quantity.quantity>
+                <energy_Price.amount>41.33</energy_Price.amount>
+            </Point>
+        </Period>
+    </Bid_TimeSeries>
+    <Bid_TimeSeries>
+        <mRID>366a5e50-6885-4a83-a5fb-49fc8a01d79d</mRID>
+        <auction.mRID>MFRR_ENERGY_ACTIVATION_MARKET</auction.mRID>
+        <businessType>B74</businessType>
+        <acquiring_Domain.mRID codingScheme="A01">10Y1001A1001A91G</acquiring_Domain.mRID>
+        <connecting_Domain.mRID codingScheme="A01">10Y1001A1001A44P</connecting_Domain.mRID>
+        <quantity_Measure_Unit.name>MAW</quantity_Measure_Unit.name>
+        <currency_Unit.name>EUR</currency_Unit.name>
+        <divisible>A01</divisible>
+        <linkedBidsIdentification>a9ad87db-8f82-4459-bfd1-b606432ce386</linkedBidsIdentification> <!-- Must be technically linked when maximum duration/resting time are defined. Proper UUID  -->
+        <status>
+            <value>A06</value>
+        </status>
+        <registeredResource.mRID codingScheme="NSE">ZZZ</registeredResource.mRID>
+        <flowDirection.direction>A01</flowDirection.direction>
+        <energyPrice_Measure_Unit.name>MWH</energyPrice_Measure_Unit.name>
+        <resting_ConstraintDuration.duration>PT30M</resting_ConstraintDuration.duration> <!-- Minimum resting time - same as the other linked bids. Divisible by 15 -->
+        <maximum_ConstraintDuration.duration>PT15M</maximum_ConstraintDuration.duration> <!-- Maximum duration - same as the other linked bids. Divisible by 15 -->
+        <standard_MarketProduct.marketProductType>A07</standard_MarketProduct.marketProductType>
+        <Period>
+            <timeInterval>
+                <start>2022-01-05T10:45Z</start>
+                <end>2022-01-05T11:00Z</end>
+            </timeInterval>
+            <resolution>PT15M</resolution>
+            <Point>
+                <position>1</position>
+                <quantity.quantity>26</quantity.quantity>
+                <minimum_Quantity.quantity>14</minimum_Quantity.quantity>
+                <energy_Price.amount>41.33</energy_Price.amount>
+            </Point>
+        </Period>
+    </Bid_TimeSeries>
+</ReserveBid_MarketDocument>

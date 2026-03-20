@@ -1,0 +1,142 @@
+<?xml version="1.0" ?>
+<!-- SVK example file - updated 2022.04.01 -->
+<ReserveBid_MarketDocument xmlns="urn:iec62325:ediel:nbm:reservebiddocument:7:2"> <!-- Schema NBM for inclusive bids  -->
+    <mRID>9f992f0e-a497-4ce2-bc28-783df4c54c46</mRID>
+    <revisionNumber>1</revisionNumber>
+    <type>A37</type>
+    <process.processType>A47</process.processType>
+    <sender_MarketParticipant.mRID codingScheme="NSE">99999</sender_MarketParticipant.mRID> <!-- Synthetic BSPID -->
+    <sender_MarketParticipant.marketRole.type>A46</sender_MarketParticipant.marketRole.type>
+    <receiver_MarketParticipant.mRID codingScheme="A01">10X1001A1001A418</receiver_MarketParticipant.mRID>
+    <receiver_MarketParticipant.marketRole.type>A34</receiver_MarketParticipant.marketRole.type>
+    <createdDateTime>2022-04-01T07:42:12Z</createdDateTime>
+    <reserveBid_Period.timeInterval>
+        <start>2022-04-01T22:00Z</start>
+        <end>2022-04-02T22:00Z</end>
+    </reserveBid_Period.timeInterval>
+    <domain.mRID codingScheme="A01">10YSE-1--------K</domain.mRID> <!-- Sweden -->
+    <subject_MarketParticipant.mRID codingScheme="NSE">99999</subject_MarketParticipant.mRID>
+    <subject_MarketParticipant.marketRole.type>A46</subject_MarketParticipant.marketRole.type> <!-- Synthetic BSPID -->
+    <Bid_TimeSeries>
+        <mRID>2d8fdc4a-98fb-4533-a7cc-9dee728bf14f</mRID>
+        <auction.mRID>MFRR_ENERGY_ACTIVATION_MARKET</auction.mRID>
+        <businessType>B74</businessType>
+        <acquiring_Domain.mRID codingScheme="A01">10Y1001A1001A91G</acquiring_Domain.mRID>
+        <connecting_Domain.mRID codingScheme="A01">10Y1001A1001A44P</connecting_Domain.mRID> <!-- Same bidding area as the other bid components -->
+        <quantity_Measure_Unit.name>MAW</quantity_Measure_Unit.name>
+        <currency_Unit.name>EUR</currency_Unit.name>
+        <divisible>A02</divisible>
+        <inclusiveBidsIdentification>1e0c8748-88d0-48b9-9a0f-483f7830eb45</inclusiveBidsIdentification> <!-- Inclusive Bid ID. Proper UUID -->
+        <status>
+            <value>A06</value>
+        </status>
+        <registeredResource.mRID codingScheme="NSE">ZZZ</registeredResource.mRID> <!-- Synthetic resource object -->
+        <flowDirection.direction>A02</flowDirection.direction> <!-- Same flowDirection as the other bid components -->
+        <energyPrice_Measure_Unit.name>MWH</energyPrice_Measure_Unit.name>
+        <standard_MarketProduct.marketProductType>A07</standard_MarketProduct.marketProductType> <!-- Same activation type as the other bid components -->
+        <Period>
+            <timeInterval>
+                <start>2022-04-02T09:00Z</start> <!-- Same market period as the other bid components -->
+                <end>2022-04-02T09:15Z</end>
+            </timeInterval>
+            <resolution>PT15M</resolution>
+            <Point>
+                <position>1</position>
+                <quantity.quantity>27</quantity.quantity>
+                <energy_Price.amount>25.39</energy_Price.amount> <!-- Same price as the other bid components -->
+            </Point>
+        </Period>
+    </Bid_TimeSeries>
+    <Bid_TimeSeries>
+        <mRID>1da5e196-4b25-47c4-9032-4f76b3a71d79</mRID>
+        <auction.mRID>MFRR_ENERGY_ACTIVATION_MARKET</auction.mRID>
+        <businessType>B74</businessType>
+        <acquiring_Domain.mRID codingScheme="A01">10Y1001A1001A91G</acquiring_Domain.mRID>
+        <connecting_Domain.mRID codingScheme="A01">10Y1001A1001A44P</connecting_Domain.mRID>
+        <quantity_Measure_Unit.name>MAW</quantity_Measure_Unit.name>
+        <currency_Unit.name>EUR</currency_Unit.name>
+        <divisible>A01</divisible>
+        <inclusiveBidsIdentification>1e0c8748-88d0-48b9-9a0f-483f7830eb45</inclusiveBidsIdentification> <!-- Inclusive Bid ID. Proper UUID -->
+        <status>
+            <value>A06</value>
+        </status>
+        <registeredResource.mRID codingScheme="NSE">ZZZ</registeredResource.mRID>
+        <flowDirection.direction>A02</flowDirection.direction> 
+        <energyPrice_Measure_Unit.name>MWH</energyPrice_Measure_Unit.name>
+        <standard_MarketProduct.marketProductType>A07</standard_MarketProduct.marketProductType>
+        <Period>
+            <timeInterval>
+                <start>2022-04-02T09:00Z</start>
+                <end>2022-04-02T09:15Z</end>
+            </timeInterval>
+            <resolution>PT15M</resolution>
+            <Point>
+                <position>1</position>
+                <quantity.quantity>43</quantity.quantity>
+                <minimum_Quantity.quantity>10</minimum_Quantity.quantity>
+                <energy_Price.amount>25.39</energy_Price.amount> 
+            </Point>
+        </Period>
+    </Bid_TimeSeries>
+    <Bid_TimeSeries>
+        <mRID>d1377646-1111-4da5-8ad9-bd9228481f89</mRID>
+        <auction.mRID>MFRR_ENERGY_ACTIVATION_MARKET</auction.mRID>
+        <businessType>B74</businessType>
+        <acquiring_Domain.mRID codingScheme="A01">10Y1001A1001A91G</acquiring_Domain.mRID>
+        <connecting_Domain.mRID codingScheme="A01">10Y1001A1001A44P</connecting_Domain.mRID>
+        <quantity_Measure_Unit.name>MAW</quantity_Measure_Unit.name>
+        <currency_Unit.name>EUR</currency_Unit.name>
+        <divisible>A02</divisible>
+        <inclusiveBidsIdentification>1e0c8748-88d0-48b9-9a0f-483f7830eb45</inclusiveBidsIdentification> <!-- Inclusive Bid ID. Proper UUID -->
+        <status>
+            <value>A06</value>
+        </status>
+        <registeredResource.mRID codingScheme="NSE">ZZZ</registeredResource.mRID>
+        <flowDirection.direction>A02</flowDirection.direction> 
+        <energyPrice_Measure_Unit.name>MWH</energyPrice_Measure_Unit.name>
+        <standard_MarketProduct.marketProductType>A07</standard_MarketProduct.marketProductType>
+        <Period>
+            <timeInterval>
+                <start>2022-04-02T09:00Z</start>
+                <end>2022-04-02T09:15Z</end>
+            </timeInterval>
+            <resolution>PT15M</resolution>
+            <Point>
+                <position>1</position>
+                <quantity.quantity>44</quantity.quantity>
+                <energy_Price.amount>25.39</energy_Price.amount> 
+            </Point>
+        </Period>
+    </Bid_TimeSeries>
+    <Bid_TimeSeries>
+        <mRID>5250b256-03ea-42df-a0b7-14a1ce9ce3d8</mRID>
+        <auction.mRID>MFRR_ENERGY_ACTIVATION_MARKET</auction.mRID>
+        <businessType>B74</businessType>
+        <acquiring_Domain.mRID codingScheme="A01">10Y1001A1001A91G</acquiring_Domain.mRID>
+        <connecting_Domain.mRID codingScheme="A01">10Y1001A1001A44P</connecting_Domain.mRID>
+        <quantity_Measure_Unit.name>MAW</quantity_Measure_Unit.name>
+        <currency_Unit.name>EUR</currency_Unit.name>
+        <divisible>A01</divisible>
+        <inclusiveBidsIdentification>1e0c8748-88d0-48b9-9a0f-483f7830eb45</inclusiveBidsIdentification> <!-- Inclusive Bid ID. Proper UUID -->
+        <status>
+            <value>A06</value>
+        </status>
+        <registeredResource.mRID codingScheme="NSE">ZZZ</registeredResource.mRID>
+        <flowDirection.direction>A02</flowDirection.direction> 
+        <energyPrice_Measure_Unit.name>MWH</energyPrice_Measure_Unit.name>
+        <standard_MarketProduct.marketProductType>A07</standard_MarketProduct.marketProductType>
+        <Period>
+            <timeInterval>
+                <start>2022-04-02T09:00Z</start>
+                <end>2022-04-02T09:15Z</end>
+            </timeInterval>
+            <resolution>PT15M</resolution>
+            <Point>
+                <position>1</position>
+                <quantity.quantity>45</quantity.quantity>
+                <minimum_Quantity.quantity>5</minimum_Quantity.quantity>
+                <energy_Price.amount>25.39</energy_Price.amount> 
+            </Point>
+        </Period>
+    </Bid_TimeSeries>
+</ReserveBid_MarketDocument>

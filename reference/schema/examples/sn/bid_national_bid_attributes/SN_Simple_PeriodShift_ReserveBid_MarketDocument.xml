@@ -1,0 +1,121 @@
+<?xml version="1.0" ?>
+<!-- Statnett example file - updated 24.02.2022-->
+<ReserveBid_MarketDocument xmlns="urn:iec62325.351:tc57wg16:451-7:reservebiddocument:7:2">
+    <mRID>36247cbe-6a29-462d-8ef1-1695edbe0863</mRID>
+    <revisionNumber>1</revisionNumber>
+    <type>A37</type>
+    <process.processType>A47</process.processType>
+    <sender_MarketParticipant.mRID codingScheme="A10">9999909919920</sender_MarketParticipant.mRID>  <!-- Synthetic BSPID -->
+    <sender_MarketParticipant.marketRole.type>A46</sender_MarketParticipant.marketRole.type>
+    <receiver_MarketParticipant.mRID codingScheme="A01">10X1001A1001A38Y</receiver_MarketParticipant.mRID>
+    <receiver_MarketParticipant.marketRole.type>A34</receiver_MarketParticipant.marketRole.type>
+    <createdDateTime>2022-02-24T07:49:12Z</createdDateTime>
+    <reserveBid_Period.timeInterval>
+        <start>2022-02-25T09:00Z</start>
+        <end>2022-02-25T09:45Z</end>
+    </reserveBid_Period.timeInterval>
+    <domain.mRID codingScheme="A01">10YNO-0--------C</domain.mRID> <!-- Norway -->
+    <subject_MarketParticipant.mRID codingScheme="A10">9999909919920</subject_MarketParticipant.mRID> <!-- Synthetic BSPID -->
+    <subject_MarketParticipant.marketRole.type>A46</subject_MarketParticipant.marketRole.type>
+    <Bid_TimeSeries>
+        <mRID>c38d5118-6bd6-4c7c-80a4-6a103a815c26</mRID>
+        <auction.mRID>MFRR_ENERGY_ACTIVATION_MARKET</auction.mRID>
+        <businessType>B74</businessType>
+        <acquiring_Domain.mRID codingScheme="A01">10Y1001A1001A91G</acquiring_Domain.mRID> <!-- Nordic Market Area -->
+        <connecting_Domain.mRID codingScheme="A01">10YNO-2--------T</connecting_Domain.mRID> <!-- NO2 -->
+        <quantity_Measure_Unit.name>MAW</quantity_Measure_Unit.name>
+        <currency_Unit.name>EUR</currency_Unit.name>
+        <divisible>A02</divisible>
+        <status>
+            <value>A06</value>
+        </status>
+        <registeredResource.mRID codingScheme="NNO">NOKG90901</registeredResource.mRID> <!-- Synthetic resource object -->
+        <flowDirection.direction>A02</flowDirection.direction>
+        <energyPrice_Measure_Unit.name>MWH</energyPrice_Measure_Unit.name>
+        <standard_MarketProduct.marketProductType>A07</standard_MarketProduct.marketProductType> <!-- SA & DA. This field has to be A07(SA & DA) or A05(SA) for period shift -->
+        <Period>
+            <timeInterval>
+                <start>2022-02-25T09:00Z</start>
+                <end>2022-02-25T09:15Z</end>
+            </timeInterval>
+            <resolution>PT15M</resolution>
+            <Point>
+                <position>1</position>
+                <quantity.quantity>27</quantity.quantity>
+                <energy_Price.amount>5.39</energy_Price.amount>
+            </Point>
+        </Period>
+        <Reason>  <!-- Period shift: Z65 = end of period -->
+            <code>Z65</code>
+        </Reason>
+    </Bid_TimeSeries>
+    <Bid_TimeSeries>
+        <mRID>223f559f-f429-414b-bd1f-32189756d066</mRID>
+        <auction.mRID>MFRR_ENERGY_ACTIVATION_MARKET</auction.mRID>
+        <businessType>B74</businessType>
+        <acquiring_Domain.mRID codingScheme="A01">10Y1001A1001A91G</acquiring_Domain.mRID>
+        <connecting_Domain.mRID codingScheme="A01">10YNO-2--------T</connecting_Domain.mRID>
+        <quantity_Measure_Unit.name>MAW</quantity_Measure_Unit.name>
+        <currency_Unit.name>EUR</currency_Unit.name>
+        <divisible>A01</divisible>
+        <status>
+            <value>A06</value>
+        </status>
+        <registeredResource.mRID codingScheme="NNO">NOKG90901</registeredResource.mRID>
+        <flowDirection.direction>A02</flowDirection.direction>
+        <energyPrice_Measure_Unit.name>MWH</energyPrice_Measure_Unit.name>
+        <standard_MarketProduct.marketProductType>A05</standard_MarketProduct.marketProductType> <!-- SA only. This field has to be A07(SA & DA) or A05(SA) for period shift  -->
+        <Period>
+            <timeInterval>
+                <start>2022-02-25T09:15Z</start>
+                <end>2022-02-25T09:30Z</end>
+            </timeInterval>
+            <resolution>PT15M</resolution>
+            <Point>
+                <position>1</position>
+                <quantity.quantity>43</quantity.quantity>
+                <minimum_Quantity.quantity>10</minimum_Quantity.quantity>
+                <energy_Price.amount>7.42</energy_Price.amount>
+            </Point>
+        </Period>
+        <Reason>  <!-- Period shift: Z64 = beginning of period -->
+            <code>Z64</code>
+        </Reason>
+    </Bid_TimeSeries>
+    <Bid_TimeSeries>
+        <mRID>f1dd8fea-d81d-11eb-b8bc-0242ac130003</mRID>
+        <auction.mRID>MFRR_ENERGY_ACTIVATION_MARKET</auction.mRID>
+        <businessType>B74</businessType>
+        <acquiring_Domain.mRID codingScheme="A01">10Y1001A1001A91G</acquiring_Domain.mRID>
+        <connecting_Domain.mRID codingScheme="A01">10YNO-2--------T</connecting_Domain.mRID>
+        <quantity_Measure_Unit.name>MAW</quantity_Measure_Unit.name>
+        <currency_Unit.name>EUR</currency_Unit.name>
+        <divisible>A02</divisible>
+        <status>
+            <value>A06</value>
+        </status>
+        <registeredResource.mRID codingScheme="NNO">NOKG90901</registeredResource.mRID>
+        <flowDirection.direction>A01</flowDirection.direction>
+        <energyPrice_Measure_Unit.name>MWH</energyPrice_Measure_Unit.name>
+        <standard_MarketProduct.marketProductType>A07</standard_MarketProduct.marketProductType> <!-- SA & DA. This field has to be A07(SA & DA) or A05(SA) for period shift -->
+        <Period>
+            <timeInterval>
+                <start>2022-02-25T09:30Z</start>
+                <end>2022-02-25T09:45Z</end>
+            </timeInterval>
+            <resolution>PT15M</resolution>
+            <Point>
+                <position>1</position>
+                <quantity.quantity>44</quantity.quantity>
+                <energy_Price.amount>23.39</energy_Price.amount>
+            </Point>
+        </Period>
+        <!-- Period shift: Using both Z65 = end of period, and Z64 = beginning of period -->
+        <Reason>
+            <code>Z64</code>
+        </Reason>
+        <Reason>
+            <code>Z65</code>
+        </Reason>
+    </Bid_TimeSeries>
+</ReserveBid_MarketDocument>

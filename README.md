@@ -1,5 +1,7 @@
 # nexa-mfrr-nordic-eam
 
+> **This project is a work in progress.** The API, documentation, and feature set are under active development and subject to change. If you want to get involved, receive progress updates, or have feedback, please [open an issue](https://github.com/phasenexa/nexa-mfrr-nordic-eam/issues) or contact the repo admin.
+
 Python library for submitting mFRR energy activation market bids to the Nordic TSOs (Statnett, Fingrid, Energinet, Svenska kraftnat).
 
 Built for the 75% who connect via API and build their own.
@@ -10,7 +12,7 @@ This library handles the full BSP workflow for the Nordic mFRR energy activation
 
 - **Build bids** - Simple, complex (exclusive, inclusive, multipart), and linked (technical, conditional) bids with full attribute support
 - **Validate before you send** - TSO-specific and common validation rules, pre-MARI and post-MARI
-- **Serialize to CIM XML** - Generates compliant `ReserveBid_MarketDocument` XML (IEC 62325-451-7 v7.4)
+- **Serialize to CIM XML** - Generates compliant `ReserveBid_MarketDocument` XML per the NBM ReserveBid schema
 - **Parse TSO responses** - Acknowledgements, activation orders, bid availability reports, allocation results
 - **Handle activations** - Build activation response documents, track activation state
 - **Heartbeat responder** - Automatic heartbeat processing for Statnett and Svenska kraftnat
@@ -37,7 +39,7 @@ pip install nexa-mfrr-nordic-eam[pandas]
 
 ```python
 from datetime import datetime, timezone
-from nexa_mfrr import (
+from nexa_mfrr_eam import (
     Bid, BidDocument, Direction, MarketProductType,
     BiddingZone, TSO, MARIMode,
 )
@@ -47,7 +49,7 @@ bid = (
     Bid.up(volume_mw=50, price_eur=85.50)
     .divisible(min_volume_mw=10)
     .for_mtu("2026-03-21T10:00Z")
-    .resource("NOKG-1234")  # Statnett regulation object code
+    .resource("NOKG90901", coding_scheme="NNO")  # Statnett regulation object
     .product_type(MarketProductType.SCHEDULED_AND_DIRECT)  # A07
     .build()
 )
@@ -55,7 +57,7 @@ bid = (
 # Wrap in a document targeting Statnett
 doc = (
     BidDocument(tso=TSO.STATNETT)
-    .sender(eic="10X1234567890123")  # Your BSP EIC code
+    .sender(party_id="9999909919920", coding_scheme="A10")  # GS1
     .add_bid(bid)
     .build()
 )
@@ -75,12 +77,12 @@ else:
 Multipart bids are groups of simple bids at different price levels for the same MTU. If the higher-priced component is accepted, all cheaper components must also be accepted.
 
 ```python
-from nexa_mfrr import MultipartGroup
+from nexa_mfrr_eam import MultipartGroup
 
 group = (
-    MultipartGroup.up(bidding_zone=BiddingZone.NO1)
+    MultipartGroup.up(bidding_zone=BiddingZone.NO2)
     .for_mtu("2026-03-21T10:00Z")
-    .resource("NOKG-1234")
+    .resource("NOKG90901", coding_scheme="NNO")
     .add_component(volume_mw=20, price_eur=50.00)
     .add_component(volume_mw=15, price_eur=75.00)
     .add_component(volume_mw=10, price_eur=120.00)
@@ -89,7 +91,7 @@ group = (
 
 doc = (
     BidDocument(tso=TSO.STATNETT)
-    .sender(eic="10X1234567890123")
+    .sender(party_id="9999909919920", coding_scheme="A10")
     .add_group(group)
     .build()
 )
@@ -100,20 +102,20 @@ doc = (
 Only one bid in the group can be activated. Useful when you have alternative resources that cannot run simultaneously.
 
 ```python
-from nexa_mfrr import ExclusiveGroup
+from nexa_mfrr_eam import ExclusiveGroup
 
 group = (
-    ExclusiveGroup(bidding_zone=BiddingZone.NO1)
+    ExclusiveGroup(bidding_zone=BiddingZone.NO2)
     .for_mtu("2026-03-21T10:00Z")
     .add_bid(
         Bid.up(volume_mw=30, price_eur=60.00)
         .indivisible()
-        .resource("NOKG-1234")
+        .resource("NOKG90901", coding_scheme="NNO")
     )
     .add_bid(
         Bid.up(volume_mw=50, price_eur=80.00)
         .divisible(min_volume_mw=10)
-        .resource("NOKG-5678")
+        .resource("NOKG90902", coding_scheme="NNO")
     )
     .product_type(MarketProductType.SCHEDULED_ONLY)
     .build()
@@ -125,11 +127,11 @@ group = (
 Technical linking ensures a resource is not double-activated when a bid in one MTU is activated via direct activation and is still ramping during the next MTU.
 
 ```python
-from nexa_mfrr import TechnicalLink
+from nexa_mfrr_eam import TechnicalLink
 
 link = (
     TechnicalLink(bidding_zone=BiddingZone.SE3)
-    .resource("REG-OBJ-SE-001")
+    .resource("REG-OBJ-SE-001", coding_scheme="A01")  # EIC
     .add_mtu(
         mtu="2026-03-21T10:00Z",
         direction=Direction.UP,
@@ -160,14 +162,14 @@ link = (
 Conditional linking adjusts bid availability in QH0 based on activation outcomes in QH-1 or QH-2.
 
 ```python
-from nexa_mfrr import ConditionalLink, ConditionalStatus
+from nexa_mfrr_eam import ConditionalStatus
 
 # "Make my bid in 10:30 unavailable if the linked bid in 10:15 was activated"
 bid_qh_minus_1 = (
     Bid.up(volume_mw=30, price_eur=70.00)
     .divisible(min_volume_mw=5)
     .for_mtu("2026-03-21T10:15Z")
-    .resource("NOKG-1234")
+    .resource("NOKG90901", coding_scheme="NNO")
     .build()
 )
 
@@ -175,7 +177,7 @@ bid_qh_0 = (
     Bid.up(volume_mw=30, price_eur=70.00)
     .divisible(min_volume_mw=5)
     .for_mtu("2026-03-21T10:30Z")
-    .resource("NOKG-1234")
+    .resource("NOKG90901", coding_scheme="NNO")
     .conditionally_available()  # A65
     .link_to(bid_qh_minus_1, status=ConditionalStatus.NOT_AVAILABLE_IF_ACTIVATED)  # A55
     .build()
@@ -185,14 +187,14 @@ bid_qh_0 = (
 ### National attributes: Statnett period shift
 
 ```python
-from nexa_mfrr import PeriodShiftPosition
+from nexa_mfrr_eam import PeriodShiftPosition
 
 # Standard product bid that can also be used for period shift
 bid = (
     Bid.up(volume_mw=20, price_eur=65.00)
     .indivisible()
     .for_mtu("2026-03-21T10:00Z")
-    .resource("NOKG-1234")
+    .resource("NOKG90901", coding_scheme="NNO")
     .period_shift(PeriodShiftPosition.END_OF_PERIOD)  # Z65
     .build()
 )
@@ -202,7 +204,7 @@ ps_bid = (
     Bid.up(volume_mw=15)  # No price for period shift only
     .indivisible()
     .for_mtu("2026-03-21T10:00Z")
-    .resource("NOKG-1234")
+    .resource("NOKG90901", coding_scheme="NNO")
     .product_type(MarketProductType.PERIOD_SHIFT_ONLY)  # Z01
     .build()
 )
@@ -211,10 +213,12 @@ ps_bid = (
 ### National attributes: maximum duration and resting time
 
 ```python
+from nexa_mfrr_eam import TechnicalLink, Direction
+
 # A hydro unit that can only run for 90 minutes and needs 60 minutes rest
 link = (
-    TechnicalLink(bidding_zone=BiddingZone.NO1)
-    .resource("NOKG-HYDRO-01")
+    TechnicalLink(bidding_zone=BiddingZone.NO2)
+    .resource("NOKG-HYDRO-01", coding_scheme="NNO")
     .max_duration(minutes=90)
     .resting_time(minutes=60)
     .add_mtu("2026-03-21T10:00Z", Direction.UP, 40, 55.00)
@@ -235,7 +239,7 @@ bid = (
     Bid.up(volume_mw=10, price_eur=200.00)
     .indivisible()
     .for_mtu("2026-03-21T10:00Z")
-    .resource("NOKG-BATT-01")
+    .resource("NOKG-BATT-01", coding_scheme="NNO")
     .product_type(MarketProductType.SCHEDULED_AND_DIRECT)
     .faster_activation(minutes=3)  # PT3M
     .build()
@@ -252,7 +256,7 @@ da_bid = (
     Bid.up(volume_mw=25, price_eur=100.00)
     .divisible(min_volume_mw=5)
     .for_mtu("2026-03-21T10:00Z")
-    .resource("DK1-RES-001")
+    .resource("DK1-RES-001", coding_scheme="A01")
     .product_type(MarketProductType.SCHEDULED_AND_DIRECT)
     .build()
 )
@@ -262,7 +266,7 @@ next_qh_bid = (
     Bid.up(volume_mw=30, price_eur=95.00)
     .divisible(min_volume_mw=5)
     .for_mtu("2026-03-21T10:15Z")
-    .resource("DK1-RES-001")
+    .resource("DK1-RES-001", coding_scheme="A01")
     .product_type(MarketProductType.SCHEDULED_AND_DIRECT)
     .build()
 )
@@ -274,11 +278,11 @@ link = TechnicalLink.from_bids([da_bid, next_qh_bid], bidding_zone=BiddingZone.D
 ### Statnett non-standard bids: mFRR-D (disturbance reserve)
 
 ```python
-from nexa_mfrr import NonStandardType
+from nexa_mfrr_eam import NonStandardType
 
 link = (
-    TechnicalLink(bidding_zone=BiddingZone.NO1)
-    .resource("NOKG-DFR-01")
+    TechnicalLink(bidding_zone=BiddingZone.NO2)
+    .resource("NOKG-DFR-01", coding_scheme="NNO")
     .non_standard(NonStandardType.DISTURBANCE_RESERVE)  # Z74
     .add_mtu("2026-03-21T10:00Z", Direction.UP, 100, 45.00)
     .add_mtu("2026-03-21T10:15Z", Direction.UP, 100, 45.00)
@@ -290,7 +294,7 @@ link = (
 
 ```python
 import pandas as pd
-from nexa_mfrr.pandas import bids_from_dataframe
+from nexa_mfrr_eam.pandas import bids_from_dataframe
 
 df = pd.DataFrame({
     "mtu_start":  pd.to_datetime(["2026-03-21T10:00Z", "2026-03-21T10:15Z", "2026-03-21T10:30Z"]),
@@ -298,12 +302,13 @@ df = pd.DataFrame({
     "volume_mw":  [50, 45, 55],
     "price_eur":  [72.30, 74.10, 69.50],
     "min_volume":  [10, 10, 10],
-    "resource":   ["NOKG-1234"] * 3,
+    "resource":   ["NOKG90901"] * 3,
 })
 
 bids = bids_from_dataframe(
     df,
-    bidding_zone=BiddingZone.NO1,
+    bidding_zone=BiddingZone.NO2,
+    resource_coding_scheme="NNO",
     product_type=MarketProductType.SCHEDULED_AND_DIRECT,
     # Automatically creates a technical link across consecutive MTUs
     technical_link=True,
@@ -311,7 +316,7 @@ bids = bids_from_dataframe(
 
 doc = (
     BidDocument(tso=TSO.STATNETT)
-    .sender(eic="10X1234567890123")
+    .sender(party_id="9999909919920", coding_scheme="A10")
     .add_bids(bids)
     .build()
 )
@@ -320,7 +325,7 @@ doc = (
 ### Handling activation orders
 
 ```python
-from nexa_mfrr import ActivationDocument, ActivationResponse
+from nexa_mfrr_eam import ActivationDocument
 
 # Parse the activation order XML received from your ECP endpoint
 order = ActivationDocument.from_xml(activation_xml_bytes)
@@ -360,7 +365,7 @@ else:
 ### Parsing allocation results
 
 ```python
-from nexa_mfrr import AllocationResult
+from nexa_mfrr_eam import AllocationResult
 
 result = AllocationResult.from_xml(allocation_xml_bytes)
 
@@ -376,7 +381,7 @@ for ts in result.time_series:
 Product characteristics change when connecting to MARI. Toggle this globally or per-validation:
 
 ```python
-from nexa_mfrr import MARIMode, configure
+from nexa_mfrr_eam import MARIMode, configure
 
 # Set globally
 configure(mari_mode=MARIMode.POST_MARI)
@@ -395,7 +400,7 @@ errors = doc.validate(mari_mode=MARIMode.POST_MARI)
 ### Gate closure calculator
 
 ```python
-from nexa_mfrr.timing import gate_closure, mtu_boundaries, MARIMode
+from nexa_mfrr_eam.timing import gate_closure, MARIMode
 
 # When do I need to submit bids for a given MTU?
 mtu_start = datetime(2026, 3, 21, 10, 0, tzinfo=timezone.utc)
@@ -413,7 +418,7 @@ print(f"BSP GCT (MARI): {gc_mari.bsp_gct}")     # 09:35:00 UTC (QH-25)
 ### MTU boundaries
 
 ```python
-from nexa_mfrr.timing import current_mtu, next_mtu, mtu_range
+from nexa_mfrr_eam.timing import current_mtu, mtu_range
 
 now = datetime.now(timezone.utc)
 mtu = current_mtu(now)
@@ -433,7 +438,7 @@ print(f"MTUs on DST transition day: {len(mtus_short)}")  # 92
 After the AOF runs, determine if your conditional bids are available:
 
 ```python
-from nexa_mfrr.timing import evaluate_conditional_availability
+from nexa_mfrr_eam.timing import evaluate_conditional_availability
 
 # Your bid in QH0 is conditionally available (A65) with link:
 # "Not available if linked bid in QH-1 was activated" (A55)
@@ -448,12 +453,12 @@ print(f"Bid available: {is_available}")  # False
 
 ### Bid document size checker
 
-The max is 4000 time series per message and 100 messages per MTU. This helper warns you before you hit limits:
+The max is 4000 time series per message and 100 messages per MTU:
 
 ```python
-from nexa_mfrr import BidDocument
+from nexa_mfrr_eam import BidDocument
 
-doc = BidDocument(tso=TSO.STATNETT).sender(eic="10X123...")
+doc = BidDocument(tso=TSO.STATNETT).sender(party_id="9999909919920", coding_scheme="A10")
 for bid in my_large_bid_list:
     doc.add_bid(bid)
 
@@ -464,6 +469,26 @@ if doc.time_series_count > 4000:
         xml = d.build().to_xml()
         # Send each via ECP
 ```
+
+## Schema notes
+
+The library targets the NBM (Nordic Balancing Model) variant of the IEC 62325-451-7 ReserveBid schema. There are some important details to be aware of:
+
+**Schema versions and namespaces**: The vendored XSD uses namespace `urn:iec62325:ediel:nbm:reservebiddocument:7:2` while the Statnett example XML uses namespace `urn:iec62325.351:tc57wg16:451-7:reservebiddocument:7:2`. The implementation guide references schema version 7.4. The library handles all known namespace variants during parsing and uses the NBM namespace for serialization by default (configurable per TSO).
+
+**Element naming**: The XSD uses `quantity_Measure_Unit.name` and `energyPrice_Measure_Unit.name` (without "ment" suffix). The implementation guide text inconsistently uses `quantity_Measurement_Unit.name`. The library follows the XSD and example XML.
+
+**Status element structure**: In the XML, the `status` element contains a nested `<value>` element, not a flat string. For example: `<status><value>A06</value></status>`.
+
+**Resource coding schemes**: The `registeredResource.mRID` element requires a `codingScheme` attribute. Known schemes: A01 (EIC), NNO (Norwegian national / NOKG codes), NSE (Swedish national). The Statnett example uses NNO.
+
+**Sender/receiver coding schemes**: Supported schemes per the implementation guide section 6.6: A01 (EIC), A10 (GS1), NSE (Swedish national). The Statnett example uses A10 (GS1) for the sender.
+
+**Denmark-specific schema**: The implementation guide notes that Denmark "currently uses a specific version of the schema." The fields `mktPSRType.psrType` (mandatory for DK) and `Note` (optional, DK only) are not present in the standard NBM XSD. Request the Denmark-specific schema from Energinet.
+
+**Optional fields in XSD not discussed in the implementation guide**: The XSD includes several optional elements: `blockBid`, `priority`, `stepIncrementQuantity`, `validity_Period.timeInterval`, `original_MarketProduct.marketProductType`, `provider_MarketParticipant.mRID`, `price_Measure_Unit.name`, `ProcuredFor_MarketParticipant`, `SharedWith_MarketParticipant`, `ExchangedWith_MarketParticipant`, `AvailableBiddingZone_Domain`, and `marketAgreement.*`. These may be relevant for future MARI integration or capacity market cross-references.
+
+**XSD cardinality vs implementation guide**: The XSD allows multiple `Period` elements per `BidTimeSeries` and multiple `Point` elements per `Series_Period`. The implementation guide restricts both to exactly one. The library enforces the implementation guide restriction by default.
 
 ## TSO-specific feature matrix
 
@@ -488,6 +513,8 @@ if doc.time_series_count > 4000:
 | Cut-off time for msgs | 15 min | None specified | None specified | 6 min |
 | Locational info | Yes (NOKG/NOG) | Yes (resource) | Yes (substations) | Yes |
 | Voluntary bid ID | No | Yes (Reason A95) | No | No |
+| Sender coding scheme | A01, A10 | A01, A10 | A01, A10 | A01, A10, NSE |
+| Resource coding scheme | NNO | A01 | A01 | A01, NSE |
 | Fallback portal | FiftyWeb | Vaksi Web | BRP Self Service Portal | FiftyWeb |
 
 ## ECP/EDX setup
@@ -497,8 +524,8 @@ This library generates the CIM XML documents. To actually send them, you need an
 **This is infrastructure you must set up with your TSO.** The process is:
 
 1. **Register as a BSP** with your connecting TSO (Statnett, Fingrid, Energinet, or Svenska kraftnat)
-2. **Request ECP/EDX documentation** from your TSO - the implementation guide for ECP can be requested directly
-3. **Deploy an ECP endpoint** - this is ENTSO-E software, available as Docker images from the ENTSO-E Docker Hub
+2. **Request ECP/EDX documentation** from your TSO
+3. **Deploy an ECP endpoint** - ENTSO-E software, available as Docker images from the ENTSO-E Docker Hub
 4. **Register your endpoint** with your TSO's Central Directory (CD)
 5. **Configure message paths** - download from ediel.org for your TSO:
    - Statnett: https://ediel.org/nordic-ecp-edx-group-nex/nex-statnett/
@@ -515,9 +542,9 @@ The NEX (Nordic ECP/EDX Group) installation guide is available at ediel.org.
 
 ```python
 # Pseudocode - your actual integration depends on your ECP setup
-from nexa_mfrr import BidDocument, TSO
+from nexa_mfrr_eam import BidDocument, TSO
 
-doc = BidDocument(tso=TSO.STATNETT).sender(eic="10X...").add_bid(bid).build()
+doc = BidDocument(tso=TSO.STATNETT).sender(party_id="...", coding_scheme="A10").add_bid(bid).build()
 xml_bytes = doc.to_xml()
 
 # Option 1: Write to ECP's FSSF inbox folder
@@ -549,7 +576,7 @@ The library maps these automatically, but for reference:
 | DK2 | 10YDK-2--------M | Denmark |
 | FI | 10YFI-1--------U | Finland |
 
-Control area EIC codes (used in document headers):
+Control area EIC codes (used in document-level `domain.mRID`):
 
 | TSO | Control Area EIC |
 |---|---|
@@ -558,7 +585,15 @@ Control area EIC codes (used in document headers):
 | Statnett | 10YNO-0--------C |
 | Svenska kraftnat | 10YSE-1--------K |
 
-Nordic Market Area: `10Y1001A1001A91G`
+Nordic Market Area (used in bid-level `acquiring_Domain.mRID`): `10Y1001A1001A91G`
+
+TSO receiver EIC codes (used in `receiver_MarketParticipant.mRID`):
+
+| TSO | Receiver EIC |
+|---|---|
+| Statnett | 10X1001A1001A38Y |
+
+(Other TSO receiver EICs should be confirmed with each TSO during onboarding.)
 
 ## What you need that this library cannot provide
 
@@ -567,13 +602,14 @@ The following information is **not publicly documented** in the mFRR EAM impleme
 1. **ECP/EDX endpoint setup credentials and certificates** - your TSO issues registration keystores and passwords
 2. **ECP endpoint URLs / broker addresses** - provided per TSO during onboarding, not published
 3. **Test environment access** - NEM-TEST/PREPROD endpoints, separate from production
-4. **Your BSP EIC code** - issued through the ENTSO-E EIC code registry, or national equivalent
-5. **Resource object codes** - Statnett uses NOKG/NOG codes; other TSOs use EIC or national identifiers
+4. **Your BSP party ID** - either an EIC code (A01) or GS1 number (A10), depending on TSO
+5. **Resource object codes** - Statnett uses NNO coding scheme (NOKG/NOG codes); other TSOs use EIC or national identifiers
 6. **Denmark's specific ReserveBid schema version** - the implementation guide notes Denmark uses a specific version; request from Energinet
 7. **NMEG additional code lists** - referenced in the implementation guide but not included; request from your TSO
 8. **Service codes for mFRR EAM on ECP** - the addressing convention (e.g. `SERVICE-<code>`) for mFRR EAM specifically
 9. **National Terms and Conditions** - each TSO publishes specific T&Cs that BSPs must comply with
 10. **Fingrid IP whitelisting requirements** - Fingrid only allows Nordic IPs plus Azure West Europe; contact them if your endpoint is elsewhere
+11. **TSO receiver EIC codes** - the Statnett example uses `10X1001A1001A38Y`; confirm the others with each TSO
 
 Example XML messages are referenced as available at [nordicbalancingmodel.net](https://nordicbalancingmodel.net/implementation-guides/) but are separate downloads.
 
@@ -581,7 +617,7 @@ Example XML messages are referenced as available at [nordicbalancingmodel.net](h
 
 ```
 nexa-mfrr-nordic-eam/
-  src/nexa_mfrr/
+  src/nexa_mfrr_eam/
     __init__.py              # Public API re-exports
     types.py                 # Enums, Pydantic models for all bid types
     config.py                # MARI mode, TSO configuration
@@ -601,6 +637,7 @@ nexa-mfrr-nordic-eam/
       acknowledgement.py     # Acknowledgement_MarketDocument parser
     xml/
       __init__.py
+      namespaces.py          # Namespace URI handling (NBM, IEC, per-TSO variants)
       serialize.py           # Pydantic models -> CIM XML
       deserialize.py         # CIM XML -> Pydantic models
       schemas/               # XSD files for validation (vendored)

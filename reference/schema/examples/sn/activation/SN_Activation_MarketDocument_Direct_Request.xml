@@ -1,0 +1,48 @@
+<?xml version="1.0" ?>
+<!-- Statnett example updated 07.03.2022 -->
+<Activation_MarketDocument xmlns="urn:iec62325.351:tc57wg16:451-7:activationdocument:6:2">
+    <mRID>13d58f3f-b732-453f-95a6-fce203a926f8</mRID>
+    <revisionNumber>1</revisionNumber>
+    <type>A40</type><!-- A40: Direct activation -->
+    <process.processType>A47</process.processType>
+    <sender_MarketParticipant.mRID codingScheme="A01">10X1001A1001A38Y</sender_MarketParticipant.mRID>
+    <sender_MarketParticipant.marketRole.type>A04</sender_MarketParticipant.marketRole.type>
+    <receiver_MarketParticipant.mRID codingScheme="A10">9999909919920</receiver_MarketParticipant.mRID><!-- Synthetic BSPID -->
+    <receiver_MarketParticipant.marketRole.type>A46</receiver_MarketParticipant.marketRole.type>
+    <createdDateTime>2022-02-04T13:14:13Z</createdDateTime>
+    <activation_Time_Period.timeInterval><!-- For direct activation: 30 minutes -->
+        <start>2022-02-04T13:15Z</start>
+        <end>2022-02-04T13:45Z</end>
+    </activation_Time_Period.timeInterval>
+    <domain.mRID codingScheme="A01">10YNO-0--------C</domain.mRID>
+    <subject_MarketParticipant.mRID codingScheme="A10">9999909919920</subject_MarketParticipant.mRID><!-- Synthetic BSPID -->
+    <subject_MarketParticipant.marketRole.type>A46</subject_MarketParticipant.marketRole.type>
+    <order_MarketDocument.mRID>vRPUllMkQFemNLJ6LDQs1A</order_MarketDocument.mRID>
+    <order_MarketDocument.revisionNumber>1</order_MarketDocument.revisionNumber>
+    <TimeSeries>
+        <mRID>45fb8cb1-a25a-469c-a1b3-ece91e45d1f0</mRID><!-- BidId -->
+        <resourceProvider_MarketParticipant.mRID codingScheme="A10">9999909919920</resourceProvider_MarketParticipant.mRID><!-- Synthetic BSPID -->
+        <businessType>A97</businessType>
+        <acquiring_Domain.mRID codingScheme="A01">10Y1001A1001A91G</acquiring_Domain.mRID>
+        <connecting_Domain.mRID codingScheme="A01">10Y1001A1001A48H</connecting_Domain.mRID>
+        <measurement_Unit.name>MAW</measurement_Unit.name>
+        <flowDirection.direction>A01</flowDirection.direction>
+        <marketObjectStatus.status>A10</marketObjectStatus.status><!-- A10: Ordered -->
+        <registeredResource.mRID codingScheme="NNO">NOKG90901</registeredResource.mRID><!-- Synthetic Registered resource ID -->
+        <Period>
+            <timeInterval>
+                <start>2022-02-04T13:24Z</start>
+                <end>2022-02-04T13:45Z</end>
+            </timeInterval>
+            <resolution>PT21M</resolution>
+            <Point>
+                <position>1</position>
+                <quantity>10</quantity>
+            </Point>
+        </Period>
+        <Reason>
+            <code>B49</code><!-- B49: Balancing -->
+        </Reason>
+    </TimeSeries>
+</Activation_MarketDocument>
+

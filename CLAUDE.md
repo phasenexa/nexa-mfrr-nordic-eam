@@ -350,3 +350,13 @@ Example XML messages should be placed in `tests/fixtures/`. The vendored Statnet
 - **Element names follow XSD, not implementation guide prose**: Use `quantity_Measure_Unit.name` not `quantity_Measurement_Unit.name`.
 - **Fingrid max 2000 bids per message**: Stricter than the common 4000 limit.
 - **UUID length**: UUIDs are 36 characters. The `ID_String` max is 60 characters. UUIDs fit but leave no room for prefixes.
+
+## Definition of Done
+
+- Track our implementation status in @README.md
+- Update tests to include new/changed work, aim for >80% code coverage, but prioritise good tests
+- Run tests and ensure they pass using `make ci`
+- Update README and/or docs to document the new behaviour/feature
+- Check if Makefile (and `make ci`) is missing any common operations (for new functionality added)
+- Add anything needed in @.gitignore to avoid checking in secrets, or temp files/logs
+- Never commit API keys, tokens, or credentials

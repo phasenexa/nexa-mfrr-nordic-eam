@@ -6,6 +6,31 @@ Python library for submitting mFRR energy activation market bids to the Nordic T
 
 Built for the 75% who connect via API and build their own.
 
+## Implementation status
+
+| Module | Status | Notes |
+|---|---|---|
+| `types.py` | ✅ Done | All enums (Direction, MarketProductType, BiddingZone, TSO, MARIMode, etc.) |
+| `exceptions.py` | ✅ Done | NexaMFRREAMError, InvalidMTUError, NaiveDatetimeError |
+| `config.py` | ✅ Done | Global MARI mode, configure(), get_mari_mode() |
+| `timing.py` | ✅ Done | MTU, GateClosure, gate_closure(), current_mtu(), mtu_range(), evaluate_conditional_availability() |
+| `__init__.py` | ✅ Done | Public re-exports |
+| `bids/simple.py` | 🔲 Planned | Simple bid builder |
+| `bids/complex.py` | 🔲 Planned | Exclusive, inclusive, multipart group builders |
+| `bids/linked.py` | 🔲 Planned | Technical and conditional link builders |
+| `bids/validation.py` | 🔲 Planned | Common + TSO-specific validation rules |
+| `xml/namespaces.py` | 🔲 Planned | Namespace URI handling |
+| `xml/serialize.py` | 🔲 Planned | Pydantic models → CIM XML |
+| `xml/deserialize.py` | 🔲 Planned | CIM XML → Pydantic models |
+| `tso/` | 🔲 Planned | TSO configuration objects (Statnett, Fingrid, Energinet, SVK) |
+| `documents/reserve_bid.py` | 🔲 Planned | ReserveBid_MarketDocument builder |
+| `documents/activation.py` | 🔲 Planned | Activation parser + response builder |
+| `documents/acknowledgement.py` | 🔲 Planned | ACK parser |
+| `documents/bid_availability.py` | 🔲 Planned | Availability parser |
+| `documents/allocation_result.py` | 🔲 Planned | Allocation result parser |
+| `heartbeat.py` | 🔲 Planned | Heartbeat detection + response |
+| `pandas.py` | 🔲 Planned | DataFrame → Bid conversion |
+
 ## What this does
 
 This library handles the full BSP workflow for the Nordic mFRR energy activation market:

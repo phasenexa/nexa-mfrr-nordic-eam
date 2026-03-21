@@ -1,5 +1,9 @@
 # nexa-mfrr-nordic-eam
 
+[![CI](https://github.com/phasenexa/nexa-mfrr-nordic-eam/actions/workflows/ci.yml/badge.svg)](https://github.com/phasenexa/nexa-mfrr-nordic-eam/actions/workflows/ci.yml)
+[![codecov](https://codecov.io/gh/phasenexa/nexa-mfrr-nordic-eam/branch/main/graph/badge.svg)](https://codecov.io/gh/phasenexa/nexa-mfrr-nordic-eam)
+
+
 > **This project is a work in progress.** The API, documentation, and feature set are under active development and subject to change. If you want to get involved, receive progress updates, or have feedback, please [open an issue](https://github.com/phasenexa/nexa-mfrr-nordic-eam/issues) or contact the repo admin.
 
 Python library for submitting mFRR energy activation market bids to the Nordic TSOs (Statnett, Fingrid, Energinet, Svenska kraftnat).

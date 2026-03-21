@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "nexa-mfrr-nordic-eam"
-version = "0.1.0"
+version = "0.1.0b1"
 description = "Python library for building, validating, and serializing mFRR energy activation market bids for the Nordic TSOs"
 authors = ["Phase Nexa <hello@phasenexa.com>"]
 license = "MIT"

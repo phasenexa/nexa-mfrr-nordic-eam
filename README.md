@@ -23,7 +23,7 @@ Built for the 75% who connect via API and build their own.
 | `bids/simple.py` | ✅ Done | Bid factory + SimpleBidBuilder with fluent API |
 | `bids/validation.py` | ✅ Done | Common + TSO-configurable validation rules |
 | `bids/complex.py` | 🔲 Planned | Exclusive, inclusive, multipart group builders |
-| `bids/linked.py` | 🔲 Planned | Technical and conditional link builders |
+| `bids/linked.py` | ✅ Done | TechnicalLink builder; conditional link methods on SimpleBidBuilder |
 | `xml/namespaces.py` | ✅ Done | NBM and IEC namespace URI constants |
 | `xml/serialize.py` | ✅ Done | Pydantic models → CIM XML (XSD-compliant element ordering) |
 | `xml/deserialize.py` | 🔲 Planned | CIM XML → Pydantic models |
@@ -31,7 +31,7 @@ Built for the 75% who connect via API and build their own.
 | `tso/statnett.py` | ✅ Done | Statnett (NO) configuration |
 | `tso/fingrid.py` | 🔲 Planned | Fingrid (FI) configuration |
 | `tso/energinet.py` | 🔲 Planned | Energinet (DK) configuration |
-| `tso/svk.py` | 🔲 Planned | Svenska kraftnat (SE) configuration |
+| `tso/svk.py` | ✅ Done | Svenska kraftnat (SE) configuration |
 | `documents/reserve_bid.py` | ✅ Done | BidDocument factory + BidDocumentBuilder + BuiltBidDocument |
 | `documents/activation.py` | 🔲 Planned | Activation parser + response builder |
 | `documents/acknowledgement.py` | 🔲 Planned | ACK parser |
@@ -39,20 +39,30 @@ Built for the 75% who connect via API and build their own.
 | `documents/allocation_result.py` | 🔲 Planned | Allocation result parser |
 | `heartbeat.py` | 🔲 Planned | Heartbeat detection + response |
 | `pandas.py` | 🔲 Planned | DataFrame → Bid conversion |
-| `examples/` | ✅ Done | Jupyter notebook: Statnett daily bid preparation with GS tax |
+| `examples/` | ✅ Done | Jupyter notebooks: Statnett daily bid preparation (GS tax); SVK technically + conditionally linked bids |
 
 ## What this does
 
-This library handles the full BSP workflow for the Nordic mFRR energy activation market:
+This library handles the full BSP workflow for the Nordic mFRR energy activation market.
 
-- **Build bids** - Simple, complex (exclusive, inclusive, multipart), and linked (technical, conditional) bids with full attribute support
-- **Validate before you send** - TSO-specific and common validation rules, pre-MARI and post-MARI
-- **Serialize to CIM XML** - Generates compliant `ReserveBid_MarketDocument` XML per the NBM ReserveBid schema
+**Implemented today:**
+
+- **Build simple bids** - Divisible and indivisible bids with full attribute support (volume, price, resource, product type, duration constraints)
+- **Technically linked bids** - `TechnicalLink` builder groups bids across MTUs under a shared link ID to prevent double-activation
+- **Conditionally linked bids** - `.conditionally_available()`, `.conditionally_unavailable()`, `.link_to()` on the bid builder; all three condition codes (A55, A56, A67)
+- **TSO configuration** - Statnett (NO) and Svenska kraftnat (SE) fully configured; Fingrid and Energinet planned
+- **Validate before you send** - Common and TSO-configurable validation rules, pre-MARI and post-MARI price limits
+- **Serialize to CIM XML** - Generates compliant `ReserveBid_MarketDocument` XML per the NBM ReserveBid schema with strict XSD element ordering
+- **Timing helpers** - Gate closure calculations, MTU boundaries, DST handling, MARI vs pre-MARI timing
+
+**Planned:**
+
+- **Complex bid groups** - Exclusive, inclusive, and multipart group builders (`bids/complex.py`)
 - **Parse TSO responses** - Acknowledgements, activation orders, bid availability reports, allocation results
 - **Handle activations** - Build activation response documents, track activation state
 - **Heartbeat responder** - Automatic heartbeat processing for Statnett and Svenska kraftnat
-- **Timing helpers** - Gate closure calculations, MTU boundaries, MARI vs pre-MARI timing
 - **Pandas integration** - Build bid portfolios from DataFrames
+- **Deserializer** - Parse incoming CIM XML back to Pydantic models
 
 What it does **not** do: manage your ECP/EDX endpoint. That is infrastructure you deploy and operate separately (see [ECP/EDX Setup](#ecpedx-setup) below). This library generates the XML documents you send through your endpoint.
 
@@ -70,7 +80,7 @@ pip install nexa-mfrr-nordic-eam[pandas]
 
 ## Quick start
 
-> **Note:** Only the simple bid builder, document builder, serializer, and timing helpers are currently implemented. The examples for complex bids, linked bids, activation parsing, and Pandas integration show the intended API and will work once those modules are complete.
+> **Note:** Simple bids, technically linked bids, conditional links, document building, serialization, and timing helpers are implemented. Examples for complex bids (`MultipartGroup`, `ExclusiveGroup`), activation parsing, and Pandas integration show the intended API and will work once those modules are complete.
 
 ### Submit a simple divisible bid to Statnett
 
@@ -111,10 +121,12 @@ else:
 
 ### Build a multipart bid
 
+> **Not yet implemented.** `MultipartGroup` is planned in `bids/complex.py`.
+
 Multipart bids are groups of simple bids at different price levels for the same MTU. If the higher-priced component is accepted, all cheaper components must also be accepted.
 
 ```python
-from nexa_mfrr_eam import MultipartGroup
+from nexa_mfrr_eam import MultipartGroup  # coming soon
 
 group = (
     MultipartGroup.up(bidding_zone=BiddingZone.NO2)
@@ -136,10 +148,12 @@ doc = (
 
 ### Build an exclusive group
 
+> **Not yet implemented.** `ExclusiveGroup` is planned in `bids/complex.py`.
+
 Only one bid in the group can be activated. Useful when you have alternative resources that cannot run simultaneously.
 
 ```python
-from nexa_mfrr_eam import ExclusiveGroup
+from nexa_mfrr_eam import ExclusiveGroup  # coming soon
 
 group = (
     ExclusiveGroup(bidding_zone=BiddingZone.NO2)
@@ -223,20 +237,22 @@ bid_qh_0 = (
 
 ### National attributes: Statnett period shift
 
+> **Not yet implemented.** `.period_shift()` on `SimpleBidBuilder` is planned. Period-shift-only bids using `MarketProductType.PERIOD_SHIFT_ONLY` (Z01) are already supported via `.product_type()`.
+
 ```python
 from nexa_mfrr_eam import PeriodShiftPosition
 
-# Standard product bid that can also be used for period shift
+# Standard product bid that can also be used for period shift (coming soon)
 bid = (
     Bid.up(volume_mw=20, price_eur=65.00)
     .indivisible()
     .for_mtu("2026-03-21T10:00Z")
     .resource("NOKG90901", coding_scheme="NNO")
-    .period_shift(PeriodShiftPosition.END_OF_PERIOD)  # Z65
+    .period_shift(PeriodShiftPosition.END_OF_PERIOD)  # Z65 – not yet implemented
     .build()
 )
 
-# Period-shift-only bid (no standard product participation)
+# Period-shift-only bid (no standard product participation) – works today
 ps_bid = (
     Bid.up(volume_mw=15)  # No price for period shift only
     .indivisible()
@@ -288,6 +304,8 @@ bid = (
 Denmark uses a different direct activation model where the DA bid and its linked bid in the next quarter are two separate bids with potentially different prices.
 
 ```python
+import uuid
+
 # Direct activatable bid for current QH
 da_bid = (
     Bid.up(volume_mw=25, price_eur=100.00)
@@ -295,24 +313,25 @@ da_bid = (
     .for_mtu("2026-03-21T10:00Z")
     .resource("DK1-RES-001", coding_scheme="A01")
     .product_type(MarketProductType.SCHEDULED_AND_DIRECT)
+    .technical_link(link_id := str(uuid.uuid4()))
     .build()
 )
 
-# Linked bid for next QH (can have different price/volume)
+# Linked bid for next QH (can have different price/volume) – shares the same link ID
 next_qh_bid = (
     Bid.up(volume_mw=30, price_eur=95.00)
     .divisible(min_volume_mw=5)
     .for_mtu("2026-03-21T10:15Z")
     .resource("DK1-RES-001", coding_scheme="A01")
     .product_type(MarketProductType.SCHEDULED_AND_DIRECT)
+    .technical_link(link_id)
     .build()
 )
-
-# Technical link ensures next_qh_bid activates if da_bid is direct-activated
-link = TechnicalLink.from_bids([da_bid, next_qh_bid], bidding_zone=BiddingZone.DK1)
 ```
 
 ### Statnett non-standard bids: mFRR-D (disturbance reserve)
+
+> **Not yet implemented.** `.non_standard()` on `TechnicalLink` is planned. The `NonStandardType` enum and `Reason` model are already defined in `types.py`.
 
 ```python
 from nexa_mfrr_eam import NonStandardType
@@ -320,7 +339,7 @@ from nexa_mfrr_eam import NonStandardType
 link = (
     TechnicalLink(bidding_zone=BiddingZone.NO2)
     .resource("NOKG-DFR-01", coding_scheme="NNO")
-    .non_standard(NonStandardType.DISTURBANCE_RESERVE)  # Z74
+    .non_standard(NonStandardType.DISTURBANCE_RESERVE)  # Z74 – not yet implemented
     .add_mtu("2026-03-21T10:00Z", Direction.UP, 100, 45.00)
     .add_mtu("2026-03-21T10:15Z", Direction.UP, 100, 45.00)
     .build()
@@ -361,8 +380,10 @@ doc = (
 
 ### Handling activation orders
 
+> **Not yet implemented.** `ActivationDocument` is planned in `documents/activation.py`.
+
 ```python
-from nexa_mfrr_eam import ActivationDocument
+from nexa_mfrr_eam import ActivationDocument  # coming soon
 
 # Parse the activation order XML received from your ECP endpoint
 order = ActivationDocument.from_xml(activation_xml_bytes)
@@ -401,8 +422,10 @@ else:
 
 ### Parsing allocation results
 
+> **Not yet implemented.** `AllocationResult` is planned in `documents/allocation_result.py`.
+
 ```python
-from nexa_mfrr_eam import AllocationResult
+from nexa_mfrr_eam import AllocationResult  # coming soon
 
 result = AllocationResult.from_xml(allocation_xml_bytes)
 
@@ -490,22 +513,24 @@ print(f"Bid available: {is_available}")  # False
 
 ### Bid document size checker
 
-The max is 4000 time series per message and 100 messages per MTU:
+The max is 4000 time series per message (2000 for Fingrid) and 100 messages per MTU:
 
 ```python
 from nexa_mfrr_eam import BidDocument
 
-doc = BidDocument(tso=TSO.STATNETT).sender(party_id="9999909919920", coding_scheme="A10")
-for bid in my_large_bid_list:
-    doc.add_bid(bid)
+doc = (
+    BidDocument(tso=TSO.STATNETT)
+    .sender(party_id="9999909919920", coding_scheme="A10")
+    .add_bids(my_large_bid_list)
+    .build()
+)
 
-# Check if we need to split
-if doc.time_series_count > 4000:
-    documents = doc.split()  # Auto-splits into multiple documents
-    for d in documents:
-        xml = d.build().to_xml()
-        # Send each via ECP
+print(f"Bids in document: {doc.time_series_count}")
+errors = doc.validate(mari_mode=MARIMode.PRE_MARI)
+# errors will include a message if the TSO limit is exceeded
 ```
+
+> **Note:** Auto-splitting into multiple documents (`.split()`) is not yet implemented. For now, partition your bid list manually before calling `.add_bids()`.
 
 ## Schema notes
 
@@ -629,8 +654,9 @@ TSO receiver EIC codes (used in `receiver_MarketParticipant.mRID`):
 | TSO | Receiver EIC |
 |---|---|
 | Statnett | 10X1001A1001A38Y |
+| Svenska kraftnat | 10X1001A1001A418 |
 
-(Other TSO receiver EICs should be confirmed with each TSO during onboarding.)
+(Fingrid and Energinet receiver EICs should be confirmed with each TSO during onboarding.)
 
 ## What you need that this library cannot provide
 
@@ -654,6 +680,10 @@ Example XML messages are referenced as available at [nordicbalancingmodel.net](h
 
 ```
 nexa-mfrr-nordic-eam/
+  examples/
+    statnett_bid_preparation.ipynb  # Statnett daily bid prep with GS tax
+    svk_linked_bids.ipynb           # SVK technically + conditionally linked bids
+    data/                           # Sample asset definitions and DA prices
   src/nexa_mfrr_eam/
     __init__.py              # Public API re-exports
     types.py                 # Enums, Pydantic models for all bid types
@@ -690,15 +720,13 @@ nexa-mfrr-nordic-eam/
     pandas.py                # DataFrame -> Bid conversion utilities
   tests/
     conftest.py
-    fixtures/                # VCR cassettes, example XML files
+    fixtures/                # Example XML files
     test_bids.py
-    test_complex.py
-    test_linked.py
-    test_validation.py
+    test_config.py
     test_documents.py
+    test_linked.py
     test_timing.py
-    test_pandas.py
-    test_tso_specific.py
+    test_xml_serialize.py
 ```
 
 ## Contributing

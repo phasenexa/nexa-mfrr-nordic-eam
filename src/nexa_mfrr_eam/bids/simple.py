@@ -24,7 +24,9 @@ from nexa_mfrr_eam.exceptions import BidValidationError
 from nexa_mfrr_eam.types import (
     BiddingZone,
     BidTimeSeriesModel,
+    ConditionalStatus,
     Direction,
+    LinkedBidTimeSeriesModel,
     MarketProductType,
     PeriodModel,
     PointModel,
@@ -69,6 +71,7 @@ class SimpleBidBuilder:
         self._max_constraint: str | None = None
         self._resting_constraint: str | None = None
         self._reasons: list[ReasonModel] = []
+        self._linked_bid_time_series: list[LinkedBidTimeSeriesModel] = []
 
     def divisible(self, min_volume_mw: int) -> Self:
         """Mark the bid as divisible with the given minimum activation volume.
@@ -230,6 +233,53 @@ class SimpleBidBuilder:
         self._resting_constraint = f"PT{minutes}M"
         return self
 
+    def conditionally_available(self) -> Self:
+        """Mark this bid as conditionally available (status A65).
+
+        A conditionally available bid is normally available but may become
+        unavailable depending on the activation outcome of linked bids.
+        Use :meth:`link_to` to define the conditions.
+
+        Returns:
+            This builder (for method chaining).
+        """
+        self._status = "A65"
+        return self
+
+    def conditionally_unavailable(self) -> Self:
+        """Mark this bid as conditionally unavailable (status A66).
+
+        A conditionally unavailable bid is normally unavailable but may become
+        available depending on the activation outcome of linked bids.
+        Use :meth:`link_to` to define the conditions.
+
+        Returns:
+            This builder (for method chaining).
+        """
+        self._status = "A66"
+        return self
+
+    def link_to(
+        self,
+        bid: BidTimeSeriesModel,
+        status: ConditionalStatus,
+    ) -> Self:
+        """Add a conditional link to another bid time series.
+
+        Args:
+            bid: The bid this bid is conditionally linked to.  Typically a bid
+                in QH-1 or QH-2 relative to this bid's MTU.
+            status: The condition defining how the linked bid's activation
+                outcome affects this bid's availability.
+
+        Returns:
+            This builder (for method chaining).
+        """
+        self._linked_bid_time_series.append(
+            LinkedBidTimeSeriesModel(mrid=bid.mrid, status_value=status.value)
+        )
+        return self
+
     def build(self) -> BidTimeSeriesModel:
         """Validate all required fields and return an immutable model.
 
@@ -294,6 +344,7 @@ class SimpleBidBuilder:
             linked_bids_identification=self._linked_bids_id,
             period=period,
             reasons=tuple(self._reasons),
+            linked_bid_time_series=tuple(self._linked_bid_time_series),
         )
 
 

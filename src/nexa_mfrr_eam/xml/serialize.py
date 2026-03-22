@@ -243,6 +243,13 @@ def _serialize_bid_time_series(
         if reason.text is not None:
             _sub(reason_el, "text", reason.text)
 
+    # 34. Linked_BidTimeSeries (0..*)
+    for linked in ts.linked_bid_time_series:
+        linked_el: etree._Element = etree.SubElement(bts, "Linked_BidTimeSeries")
+        _sub(linked_el, "mRID", linked.mrid)
+        linked_status_el: etree._Element = etree.SubElement(linked_el, "status")
+        _sub(linked_status_el, "value", linked.status_value)
+
     # 38. inclusiveBidsIdentification (optional, last element per XSD)
     if ts.inclusive_bids_identification is not None:
         _sub(bts, "inclusiveBidsIdentification", ts.inclusive_bids_identification)

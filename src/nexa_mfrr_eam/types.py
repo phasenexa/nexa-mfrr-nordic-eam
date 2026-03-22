@@ -92,7 +92,8 @@ class ConditionalStatus(enum.Enum):
     """
 
     NOT_AVAILABLE_IF_ACTIVATED = "A55"  # Bid unavailable if linked bid was activated
-    AVAILABLE_IF_ACTIVATED = "A56"  # Bid available only if linked bid was activated
+    AVAILABLE_IF_ACTIVATED = "A56"  # Bid available only if linked bid was NOT activated
+    AVAILABLE_IF_LINKED_ACTIVATED = "A67"  # Bid available if linked bid was activated
     # A71 and A72 are referenced in CLAUDE.md as unsupported by Energinet;
     # their precise semantics require the full implementation guide.
     # TODO: add A71, A72 when implementation guide section is available.
@@ -193,6 +194,23 @@ class ReasonModel(BaseModel):
     """Optional free-text description (max 512 chars per XSD)."""
 
 
+class LinkedBidTimeSeriesModel(BaseModel):
+    """A conditional link to another bid time series.
+
+    Corresponds to the ``Linked_BidTimeSeries`` element in ``BidTimeSeries``.
+    Each instance defines a condition: how the activation outcome of the
+    referenced bid affects the availability of the parent bid.
+    """
+
+    model_config = ConfigDict(frozen=True)
+
+    mrid: str
+    """mRID of the linked bid time series."""
+
+    status_value: str
+    """Condition status code: A55, A56, or A67."""
+
+
 class BidTimeSeriesModel(BaseModel):
     """Internal model for a single ``Bid_TimeSeries`` element.
 
@@ -272,6 +290,9 @@ class BidTimeSeriesModel(BaseModel):
 
     reasons: tuple[ReasonModel, ...] = ()
     """Optional Reason elements (e.g. period-shift codes, voluntary bid IDs)."""
+
+    linked_bid_time_series: tuple[LinkedBidTimeSeriesModel, ...] = ()
+    """Conditional links to other bids (``Linked_BidTimeSeries`` elements)."""
 
 
 class BidDocumentModel(BaseModel):

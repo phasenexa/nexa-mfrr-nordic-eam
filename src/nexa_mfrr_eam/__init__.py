@@ -28,6 +28,7 @@ Quickstart::
 See the project README for full usage examples.
 """
 
+from nexa_mfrr_eam.bids.linked import TechnicalLink
 from nexa_mfrr_eam.bids.simple import Bid
 from nexa_mfrr_eam.config import configure, get_mari_mode
 from nexa_mfrr_eam.documents.reserve_bid import BidDocument, BuiltBidDocument
@@ -64,6 +65,7 @@ __all__ = [
     "BidValidationError",
     # Bid builders
     "Bid",
+    "TechnicalLink",
     # Document builders
     "BidDocument",
     "BuiltBidDocument",

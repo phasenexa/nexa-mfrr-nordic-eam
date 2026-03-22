@@ -1,0 +1,13 @@
+{
+  "name": "Battery Storage - Kvinesdal",
+  "resource_id": "NOKG90903",
+  "coding_scheme": "NNO",
+  "bidding_zone": "NO2",
+  "direction": "UP",
+  "volume_mw": 20,
+  "min_volume_mw": 10,
+  "product_type": "SCHEDULED_AND_DIRECT",
+  "overhead_eur_mwh": 3.20,
+  "profit_target_eur_mwh": 8.00,
+  "gs_rate": 0.0
+}

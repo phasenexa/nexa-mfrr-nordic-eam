@@ -1,0 +1,13 @@
+{
+  "name": "Offshore Wind Farm - Utsira Nord",
+  "resource_id": "NOKG90902",
+  "coding_scheme": "NNO",
+  "bidding_zone": "NO2",
+  "direction": "UP",
+  "volume_mw": 30,
+  "min_volume_mw": 10,
+  "product_type": "SCHEDULED_ONLY",
+  "overhead_eur_mwh": 1.80,
+  "profit_target_eur_mwh": 4.00,
+  "gs_rate": 0.25
+}

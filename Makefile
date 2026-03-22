@@ -1,4 +1,4 @@
-.PHONY: install test lint typecheck format ci clean
+.PHONY: install test lint typecheck format ci clean execute-notebooks test-notebooks
 
 install:
 	poetry install
@@ -17,7 +17,15 @@ format:
 typecheck:
 	poetry run mypy src
 
-ci: lint typecheck test
+execute-notebooks:
+	poetry run jupyter nbconvert --to notebook --execute --inplace examples/*.ipynb \
+		--ExecutePreprocessor.timeout=120
+
+test-notebooks:
+	poetry run pytest --nbmake examples/
+
+ci: lint typecheck test test-notebooks
 
 clean:
-	rm -rf dist/ .coverage htmlcov/ .pytest_cache/ .mypy_cache/ .ruff_cache/
+	rm -rf dist/ .coverage htmlcov/ .pytest_cache/ .mypy_cache/ .ruff_cache/ \
+		examples/executed/

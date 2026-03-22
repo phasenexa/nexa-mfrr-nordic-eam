@@ -1,0 +1,13 @@
+{
+  "name": "Hydro Reservoir - Kvennfoss",
+  "resource_id": "NOKG90901",
+  "coding_scheme": "NNO",
+  "bidding_zone": "NO2",
+  "direction": "UP",
+  "volume_mw": 50,
+  "min_volume_mw": 10,
+  "product_type": "SCHEDULED_AND_DIRECT",
+  "overhead_eur_mwh": 2.50,
+  "profit_target_eur_mwh": 5.00,
+  "gs_rate": 0.376
+}

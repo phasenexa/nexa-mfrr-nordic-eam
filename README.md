@@ -2,6 +2,7 @@
 
 [![CI](https://github.com/phasenexa/nexa-mfrr-nordic-eam/actions/workflows/ci.yml/badge.svg)](https://github.com/phasenexa/nexa-mfrr-nordic-eam/actions/workflows/ci.yml)
 [![codecov](https://codecov.io/gh/phasenexa/nexa-mfrr-nordic-eam/branch/main/graph/badge.svg)](https://codecov.io/gh/phasenexa/nexa-mfrr-nordic-eam)
+![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue)
 
 
 > **This project is a work in progress.** The API, documentation, and feature set are under active development and subject to change. If you want to get involved, receive progress updates, or have feedback, please [open an issue](https://github.com/phasenexa/nexa-mfrr-nordic-eam/issues) or contact the repo admin.
@@ -14,26 +15,31 @@ Built for the 75% who connect via API and build their own.
 
 | Module | Status | Notes |
 |---|---|---|
-| `types.py` | ✅ Done | All enums (Direction, MarketProductType, BiddingZone, TSO, MARIMode, etc.) |
-| `exceptions.py` | ✅ Done | NexaMFRREAMError, InvalidMTUError, NaiveDatetimeError |
+| `types.py` | ✅ Done | All enums + Pydantic models (BidTimeSeriesModel, BidDocumentModel, etc.) |
+| `exceptions.py` | ✅ Done | NexaMFRREAMError, InvalidMTUError, NaiveDatetimeError, BidValidationError |
 | `config.py` | ✅ Done | Global MARI mode, configure(), get_mari_mode() |
 | `timing.py` | ✅ Done | MTU, GateClosure, gate_closure(), current_mtu(), mtu_range(), evaluate_conditional_availability() |
-| `__init__.py` | ✅ Done | Public re-exports |
-| `bids/simple.py` | 🔲 Planned | Simple bid builder |
+| `__init__.py` | ✅ Done | Public re-exports including Bid, BidDocument, BuiltBidDocument |
+| `bids/simple.py` | ✅ Done | Bid factory + SimpleBidBuilder with fluent API |
+| `bids/validation.py` | ✅ Done | Common + TSO-configurable validation rules |
 | `bids/complex.py` | 🔲 Planned | Exclusive, inclusive, multipart group builders |
 | `bids/linked.py` | 🔲 Planned | Technical and conditional link builders |
-| `bids/validation.py` | 🔲 Planned | Common + TSO-specific validation rules |
-| `xml/namespaces.py` | 🔲 Planned | Namespace URI handling |
-| `xml/serialize.py` | 🔲 Planned | Pydantic models → CIM XML |
+| `xml/namespaces.py` | ✅ Done | NBM and IEC namespace URI constants |
+| `xml/serialize.py` | ✅ Done | Pydantic models → CIM XML (XSD-compliant element ordering) |
 | `xml/deserialize.py` | 🔲 Planned | CIM XML → Pydantic models |
-| `tso/` | 🔲 Planned | TSO configuration objects (Statnett, Fingrid, Energinet, SVK) |
-| `documents/reserve_bid.py` | 🔲 Planned | ReserveBid_MarketDocument builder |
+| `tso/base.py` | ✅ Done | TSOConfig strategy dataclass |
+| `tso/statnett.py` | ✅ Done | Statnett (NO) configuration |
+| `tso/fingrid.py` | 🔲 Planned | Fingrid (FI) configuration |
+| `tso/energinet.py` | 🔲 Planned | Energinet (DK) configuration |
+| `tso/svk.py` | 🔲 Planned | Svenska kraftnat (SE) configuration |
+| `documents/reserve_bid.py` | ✅ Done | BidDocument factory + BidDocumentBuilder + BuiltBidDocument |
 | `documents/activation.py` | 🔲 Planned | Activation parser + response builder |
 | `documents/acknowledgement.py` | 🔲 Planned | ACK parser |
 | `documents/bid_availability.py` | 🔲 Planned | Availability parser |
 | `documents/allocation_result.py` | 🔲 Planned | Allocation result parser |
 | `heartbeat.py` | 🔲 Planned | Heartbeat detection + response |
 | `pandas.py` | 🔲 Planned | DataFrame → Bid conversion |
+| `examples/` | ✅ Done | Jupyter notebook: Statnett daily bid preparation with GS tax |
 
 ## What this does
 
@@ -63,6 +69,8 @@ pip install nexa-mfrr-nordic-eam[pandas]
 ```
 
 ## Quick start
+
+> **Note:** Only the simple bid builder, document builder, serializer, and timing helpers are currently implemented. The examples for complex bids, linked bids, activation parsing, and Pandas integration show the intended API and will work once those modules are complete.
 
 ### Submit a simple divisible bid to Statnett
 

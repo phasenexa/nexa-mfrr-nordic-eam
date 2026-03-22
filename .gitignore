@@ -207,3 +207,4 @@ marimo/_lsp/
 __marimo__/
 reference/schema/examples/.DS_Store
 reference/schema/examples/sn/.DS_Store
+examples/executed/

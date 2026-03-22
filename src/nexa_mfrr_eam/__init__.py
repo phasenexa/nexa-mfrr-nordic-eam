@@ -6,16 +6,33 @@ and parsing TSO responses.
 
 Quickstart::
 
-    from nexa_mfrr_eam import MARIMode, configure, Direction, TSO
+    from nexa_mfrr_eam import Bid, BidDocument, MARIMode, TSO
 
-    # Set global MARI mode
-    configure(mari_mode=MARIMode.PRE_MARI)
+    bid = (
+        Bid.up(volume_mw=50, price_eur=85.50)
+        .divisible(min_volume_mw=10)
+        .for_mtu("2026-03-21T10:00Z")
+        .resource("NOKG90901", coding_scheme="NNO")
+        .product_type(MarketProductType.SCHEDULED_AND_DIRECT)
+        .build()
+    )
+
+    doc = (
+        BidDocument(tso=TSO.STATNETT)
+        .sender(party_id="9999909919920", coding_scheme="A10")
+        .add_bid(bid)
+        .build()
+    )
+    xml_bytes = doc.to_xml()
 
 See the project README for full usage examples.
 """
 
+from nexa_mfrr_eam.bids.simple import Bid
 from nexa_mfrr_eam.config import configure, get_mari_mode
+from nexa_mfrr_eam.documents.reserve_bid import BidDocument, BuiltBidDocument
 from nexa_mfrr_eam.exceptions import (
+    BidValidationError,
     InvalidMTUError,
     NaiveDatetimeError,
     NexaMFRREAMError,
@@ -44,6 +61,12 @@ __all__ = [
     "NexaMFRREAMError",
     "InvalidMTUError",
     "NaiveDatetimeError",
+    "BidValidationError",
+    # Bid builders
+    "Bid",
+    # Document builders
+    "BidDocument",
+    "BuiltBidDocument",
     # Enums
     "MARIMode",
     "Direction",

@@ -21,3 +21,20 @@ class NaiveDatetimeError(NexaMFRREAMError):
 
     All datetimes in this library must be timezone-aware UTC.
     """
+
+
+class BidValidationError(NexaMFRREAMError):
+    """Raised when a bid or document fails validation rules.
+
+    Collects all validation errors before raising so the caller can
+    see the full list of problems at once.
+    """
+
+    def __init__(self, errors: list[str]) -> None:
+        """Initialise with a list of human-readable error messages.
+
+        Args:
+            errors: One or more validation error descriptions.
+        """
+        self.errors = errors
+        super().__init__("; ".join(errors))

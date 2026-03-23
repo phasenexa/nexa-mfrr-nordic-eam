@@ -48,3 +48,6 @@ class TSOConfig:
 
     resource_coding_scheme: str = "A01"
     """Default coding scheme for ``registeredResource.mRID``."""
+
+    requires_psr_type: bool = False
+    """Whether ``mktPSRType.psrType`` is mandatory (Energinet/DK only)."""

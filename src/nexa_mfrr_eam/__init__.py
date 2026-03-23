@@ -28,6 +28,7 @@ Quickstart::
 See the project README for full usage examples.
 """
 
+from nexa_mfrr_eam.bids.complex import ExclusiveGroup, InclusiveGroup, MultipartGroup
 from nexa_mfrr_eam.bids.linked import TechnicalLink
 from nexa_mfrr_eam.bids.simple import Bid
 from nexa_mfrr_eam.config import configure, get_mari_mode
@@ -48,9 +49,10 @@ from nexa_mfrr_eam.types import (
     MarketProductType,
     NonStandardType,
     PeriodShiftPosition,
+    ProductionType,
 )
 
-__version__ = "0.2.0b1"
+__version__ = "0.3.0b1"
 
 __all__ = [
     # Version
@@ -66,6 +68,9 @@ __all__ = [
     # Bid builders
     "Bid",
     "TechnicalLink",
+    "ExclusiveGroup",
+    "MultipartGroup",
+    "InclusiveGroup",
     # Document builders
     "BidDocument",
     "BuiltBidDocument",
@@ -78,5 +83,6 @@ __all__ = [
     "ConditionalStatus",
     "NonStandardType",
     "PeriodShiftPosition",
+    "ProductionType",
     "CodingScheme",
 ]

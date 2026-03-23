@@ -250,9 +250,16 @@ def _serialize_bid_time_series(
         linked_status_el: etree._Element = etree.SubElement(linked_el, "status")
         _sub(linked_status_el, "value", linked.status_value)
 
-    # 38. inclusiveBidsIdentification (optional, last element per XSD)
+    # 38. inclusiveBidsIdentification (optional, last element per standard XSD)
     if ts.inclusive_bids_identification is not None:
         _sub(bts, "inclusiveBidsIdentification", ts.inclusive_bids_identification)
+
+    # Denmark-specific schema extensions (not in standard NBM XSD).
+    # Position is after inclusiveBidsIdentification pending the DK XSD.
+    if ts.psr_type is not None:
+        _sub(bts, "mktPSRType.psrType", ts.psr_type)
+    if ts.note is not None:
+        _sub(bts, "Note", ts.note)
 
 
 def serialize_reserve_bid_document(

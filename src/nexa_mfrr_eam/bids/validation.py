@@ -42,6 +42,7 @@ def validate_bid_time_series(
     mari_mode: MARIMode,
     min_bid_mw: int = 1,
     max_bids_per_message: int = 4000,
+    requires_psr_type: bool = False,
 ) -> list[str]:
     """Validate a single BidTimeSeries against common rules.
 
@@ -50,6 +51,8 @@ def validate_bid_time_series(
         mari_mode: Active MARI mode (affects price limits).
         min_bid_mw: Minimum bid volume for the TSO (default 1 MW).
         max_bids_per_message: Not used here; checked at document level.
+        requires_psr_type: When ``True``, the bid must have a ``psr_type``
+            set (Energinet / Denmark requirement).
 
     Returns:
         A (possibly empty) list of human-readable error strings.
@@ -105,6 +108,13 @@ def validate_bid_time_series(
             f"Bid mRID {ts.mrid}: period-shift-only bid (Z01) must not have a price"
         )
 
+    # Energinet / Denmark: psr_type is mandatory
+    if requires_psr_type and ts.psr_type is None:
+        errors.append(
+            f"Bid mRID {ts.mrid}: mktPSRType.psrType is required for Energinet bids "
+            f"(use ProductionType.SOLAR, WIND_OFFSHORE, WIND_ONSHORE, or OTHER)"
+        )
+
     # mRID length (XSD ID_String max 60)
     if len(ts.mrid) > 60:
         errors.append(
@@ -124,6 +134,7 @@ def validate_document(
     mari_mode: MARIMode,
     min_bid_mw: int = 1,
     max_bids_per_message: int = 4000,
+    requires_psr_type: bool = False,
 ) -> list[str]:
     """Validate a BidDocumentModel against common and TSO-supplied rules.
 
@@ -132,6 +143,8 @@ def validate_document(
         mari_mode: Active MARI mode.
         min_bid_mw: TSO minimum bid volume in MW.
         max_bids_per_message: Maximum number of BidTimeSeries per message.
+        requires_psr_type: When ``True``, every bid must carry a
+            ``psr_type`` value (Energinet / Denmark requirement).
 
     Returns:
         A (possibly empty) list of human-readable error strings.
@@ -148,6 +161,13 @@ def validate_document(
         )
 
     for ts in doc.bid_time_series:
-        errors.extend(validate_bid_time_series(ts, mari_mode, min_bid_mw=min_bid_mw))
+        errors.extend(
+            validate_bid_time_series(
+                ts,
+                mari_mode,
+                min_bid_mw=min_bid_mw,
+                requires_psr_type=requires_psr_type,
+            )
+        )
 
     return errors

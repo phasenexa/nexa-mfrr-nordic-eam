@@ -132,6 +132,21 @@ class CodingScheme(enum.Enum):
     NSE = "NSE"  # Swedish national (Svenska kraftnat)
 
 
+class ProductionType(enum.Enum):
+    """Production technology type codes for Energinet (Denmark) bids.
+
+    Mandatory for all bids submitted to Energinet.  Serialized as
+    ``mktPSRType.psrType`` in the Denmark-specific ReserveBid schema.
+
+    CIM PSR type codes per IEC CIM and ENTSO-E code lists.
+    """
+
+    SOLAR = "B16"  # Solar power
+    WIND_OFFSHORE = "B18"  # Wind offshore
+    WIND_ONSHORE = "B19"  # Wind onshore
+    OTHER = "B20"  # Other technology type
+
+
 # ---------------------------------------------------------------------------
 # Pydantic models – internal canonical representation
 # ---------------------------------------------------------------------------
@@ -293,6 +308,22 @@ class BidTimeSeriesModel(BaseModel):
 
     linked_bid_time_series: tuple[LinkedBidTimeSeriesModel, ...] = ()
     """Conditional links to other bids (``Linked_BidTimeSeries`` elements)."""
+
+    psr_type: str | None = None
+    """PSR type code for ``mktPSRType.psrType`` (Energinet/DK mandatory).
+
+    Use :class:`ProductionType` values: B16 solar, B18 wind offshore,
+    B19 wind onshore, B20 other.  Not part of the standard NBM XSD;
+    required by the Denmark-specific ReserveBid schema.
+    """
+
+    note: str | None = None
+    """Free-text note for ``Note`` element (Energinet/DK optional).
+
+    Passed through from the bid document to the activation order.
+    Not part of the standard NBM XSD; only present in the Denmark-specific
+    ReserveBid schema.
+    """
 
 
 class BidDocumentModel(BaseModel):

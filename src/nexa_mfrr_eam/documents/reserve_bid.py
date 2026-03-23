@@ -53,6 +53,7 @@ class BidDocumentBuilder:
         self._sender_mrid: str | None = None
         self._sender_coding_scheme: str | None = None
         self._bids: list[BidTimeSeriesModel] = []
+        self._requires_psr_type: bool = self._tso_config.requires_psr_type
 
     def sender(self, party_id: str, coding_scheme: str) -> BidDocumentBuilder:
         """Set the sender (BSP) party identifier.
@@ -150,6 +151,7 @@ class BidDocumentBuilder:
             self._tso,
             self._tso_config.min_bid_mw,
             self._tso_config.max_bids_per_message,
+            self._requires_psr_type,
         )
 
 
@@ -165,6 +167,7 @@ class BuiltBidDocument:
         tso: TSO,
         min_bid_mw: int,
         max_bids_per_message: int,
+        requires_psr_type: bool = False,
     ) -> None:
         """Initialise the built document.
 
@@ -173,11 +176,13 @@ class BuiltBidDocument:
             tso: The target TSO.
             min_bid_mw: TSO minimum bid volume in MW.
             max_bids_per_message: TSO maximum BidTimeSeries per document.
+            requires_psr_type: Whether ``mktPSRType.psrType`` is mandatory.
         """
         self._model = model
         self._tso = tso
         self._min_bid_mw = min_bid_mw
         self._max_bids_per_message = max_bids_per_message
+        self._requires_psr_type = requires_psr_type
 
     @property
     def model(self) -> BidDocumentModel:
@@ -210,6 +215,7 @@ class BuiltBidDocument:
             mari_mode=mari_mode,
             min_bid_mw=self._min_bid_mw,
             max_bids_per_message=self._max_bids_per_message,
+            requires_psr_type=self._requires_psr_type,
         )
 
     def to_xml(self, pretty_print: bool = True) -> bytes:

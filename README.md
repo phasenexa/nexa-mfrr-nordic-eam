@@ -22,7 +22,7 @@ Built for the 75% who connect via API and build their own.
 | `__init__.py` | ✅ Done | Public re-exports including Bid, BidDocument, BuiltBidDocument |
 | `bids/simple.py` | ✅ Done | Bid factory + SimpleBidBuilder with fluent API |
 | `bids/validation.py` | ✅ Done | Common + TSO-configurable validation rules |
-| `bids/complex.py` | 🔲 Planned | Exclusive, inclusive, multipart group builders |
+| `bids/complex.py` | ✅ Done | ExclusiveGroup, MultipartGroup, InclusiveGroup builders with group-level validation |
 | `bids/linked.py` | ✅ Done | TechnicalLink builder; conditional link methods on SimpleBidBuilder |
 | `xml/namespaces.py` | ✅ Done | NBM and IEC namespace URI constants |
 | `xml/serialize.py` | ✅ Done | Pydantic models → CIM XML (XSD-compliant element ordering) |
@@ -30,7 +30,7 @@ Built for the 75% who connect via API and build their own.
 | `tso/base.py` | ✅ Done | TSOConfig strategy dataclass |
 | `tso/statnett.py` | ✅ Done | Statnett (NO) configuration |
 | `tso/fingrid.py` | 🔲 Planned | Fingrid (FI) configuration |
-| `tso/energinet.py` | 🔲 Planned | Energinet (DK) configuration |
+| `tso/energinet.py` | ✅ Done | Energinet (DK) configuration; requires_psr_type, no heartbeat, local DA model |
 | `tso/svk.py` | ✅ Done | Svenska kraftnat (SE) configuration |
 | `documents/reserve_bid.py` | ✅ Done | BidDocument factory + BidDocumentBuilder + BuiltBidDocument |
 | `documents/activation.py` | 🔲 Planned | Activation parser + response builder |
@@ -39,7 +39,7 @@ Built for the 75% who connect via API and build their own.
 | `documents/allocation_result.py` | 🔲 Planned | Allocation result parser |
 | `heartbeat.py` | 🔲 Planned | Heartbeat detection + response |
 | `pandas.py` | 🔲 Planned | DataFrame → Bid conversion |
-| `examples/` | ✅ Done | Jupyter notebooks: Statnett daily bid preparation (GS tax); SVK technically + conditionally linked bids |
+| `examples/` | ✅ Done | Jupyter notebooks: Statnett daily bid preparation (GS tax); SVK technically + conditionally linked bids; Energinet simple bids + complex groups |
 
 ## What this does
 
@@ -50,14 +50,13 @@ This library handles the full BSP workflow for the Nordic mFRR energy activation
 - **Build simple bids** - Divisible and indivisible bids with full attribute support (volume, price, resource, product type, duration constraints)
 - **Technically linked bids** - `TechnicalLink` builder groups bids across MTUs under a shared link ID to prevent double-activation
 - **Conditionally linked bids** - `.conditionally_available()`, `.conditionally_unavailable()`, `.link_to()` on the bid builder; all three condition codes (A55, A56, A67)
-- **TSO configuration** - Statnett (NO) and Svenska kraftnat (SE) fully configured; Fingrid and Energinet planned
+- **Complex bid groups** - `ExclusiveGroup`, `MultipartGroup`, `InclusiveGroup` builders with group constraints validated at `build()` time
+- **TSO configuration** - Statnett (NO), Svenska kraftnat (SE), and Energinet (DK) fully configured; Fingrid planned
 - **Validate before you send** - Common and TSO-configurable validation rules, pre-MARI and post-MARI price limits
 - **Serialize to CIM XML** - Generates compliant `ReserveBid_MarketDocument` XML per the NBM ReserveBid schema with strict XSD element ordering
 - **Timing helpers** - Gate closure calculations, MTU boundaries, DST handling, MARI vs pre-MARI timing
 
 **Planned:**
-
-- **Complex bid groups** - Exclusive, inclusive, and multipart group builders (`bids/complex.py`)
 - **Parse TSO responses** - Acknowledgements, activation orders, bid availability reports, allocation results
 - **Handle activations** - Build activation response documents, track activation state
 - **Heartbeat responder** - Automatic heartbeat processing for Statnett and Svenska kraftnat
@@ -80,7 +79,7 @@ pip install nexa-mfrr-nordic-eam[pandas]
 
 ## Quick start
 
-> **Note:** Simple bids, technically linked bids, conditional links, document building, serialization, and timing helpers are implemented. Examples for complex bids (`MultipartGroup`, `ExclusiveGroup`), activation parsing, and Pandas integration show the intended API and will work once those modules are complete.
+> **Note:** Simple bids, technically linked bids, conditional links, complex bid groups (`ExclusiveGroup`, `MultipartGroup`, `InclusiveGroup`), document building, serialization, and timing helpers are implemented. Examples for activation parsing and Pandas integration show the intended API and will work once those modules are complete.
 
 ### Submit a simple divisible bid to Statnett
 
@@ -121,15 +120,16 @@ else:
 
 ### Build a multipart bid
 
-> **Not yet implemented.** `MultipartGroup` is planned in `bids/complex.py`.
+> **Implemented.** `MultipartGroup` is available in `bids/complex.py`.
 
 Multipart bids are groups of simple bids at different price levels for the same MTU. If the higher-priced component is accepted, all cheaper components must also be accepted.
 
 ```python
-from nexa_mfrr_eam import MultipartGroup  # coming soon
+from nexa_mfrr_eam import Direction, MultipartGroup
 
 group = (
-    MultipartGroup.up(bidding_zone=BiddingZone.NO2)
+    MultipartGroup(bidding_zone=BiddingZone.NO2)
+    .direction(Direction.UP)
     .for_mtu("2026-03-21T10:00Z")
     .resource("NOKG90901", coding_scheme="NNO")
     .add_component(volume_mw=20, price_eur=50.00)
@@ -141,19 +141,19 @@ group = (
 doc = (
     BidDocument(tso=TSO.STATNETT)
     .sender(party_id="9999909919920", coding_scheme="A10")
-    .add_group(group)
+    .add_bids(group)
     .build()
 )
 ```
 
 ### Build an exclusive group
 
-> **Not yet implemented.** `ExclusiveGroup` is planned in `bids/complex.py`.
+> **Implemented.** `ExclusiveGroup` is available in `bids/complex.py`.
 
 Only one bid in the group can be activated. Useful when you have alternative resources that cannot run simultaneously.
 
 ```python
-from nexa_mfrr_eam import ExclusiveGroup  # coming soon
+from nexa_mfrr_eam import ExclusiveGroup
 
 group = (
     ExclusiveGroup(bidding_zone=BiddingZone.NO2)
@@ -654,9 +654,9 @@ TSO receiver EIC codes (used in `receiver_MarketParticipant.mRID`):
 | TSO | Receiver EIC |
 |---|---|
 | Statnett | 10X1001A1001A38Y |
+| Fingrid | 10X1001A1001A264 |
+| Energinet | 10X1001A1001A248 |
 | Svenska kraftnat | 10X1001A1001A418 |
-
-(Fingrid and Energinet receiver EICs should be confirmed with each TSO during onboarding.)
 
 ## What you need that this library cannot provide
 
@@ -672,7 +672,7 @@ The following information is **not publicly documented** in the mFRR EAM impleme
 8. **Service codes for mFRR EAM on ECP** - the addressing convention (e.g. `SERVICE-<code>`) for mFRR EAM specifically
 9. **National Terms and Conditions** - each TSO publishes specific T&Cs that BSPs must comply with
 10. **Fingrid IP whitelisting requirements** - Fingrid only allows Nordic IPs plus Azure West Europe; contact them if your endpoint is elsewhere
-11. **TSO receiver EIC codes** - the Statnett example uses `10X1001A1001A38Y`; confirm the others with each TSO
+11. **TSO receiver EIC codes** - all four are now documented in the table above
 
 Example XML messages are referenced as available at [nordicbalancingmodel.net](https://nordicbalancingmodel.net/implementation-guides/) but are separate downloads.
 
@@ -683,6 +683,8 @@ nexa-mfrr-nordic-eam/
   examples/
     statnett_bid_preparation.ipynb  # Statnett daily bid prep with GS tax
     svk_linked_bids.ipynb           # SVK technically + conditionally linked bids
+    energinet_simple_bids.ipynb     # Energinet simple bids
+    energinet_complex_bids.ipynb    # Energinet complex groups
     data/                           # Sample asset definitions and DA prices
   src/nexa_mfrr_eam/
     __init__.py              # Public API re-exports

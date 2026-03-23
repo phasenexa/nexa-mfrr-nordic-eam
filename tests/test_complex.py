@@ -468,3 +468,129 @@ def test_inclusive_group_xml_contains_inclusive_id() -> None:
     )
     xml = doc.to_xml().decode("utf-8")
     assert "inclusiveBidsIdentification" in xml
+
+
+# ---------------------------------------------------------------------------
+# group_id property (lines 279, 488, 693)
+# ---------------------------------------------------------------------------
+
+
+def test_exclusive_group_id_property() -> None:
+    builder = (
+        ExclusiveGroup(bidding_zone=BiddingZone.DK1)
+        .direction(Direction.UP)
+        .resource("DK1-RES-001")
+        .for_mtu(MTU)
+    )
+    assert isinstance(builder.group_id, str)
+    assert len(builder.group_id) == 36  # UUID v4
+
+
+def test_multipart_group_id_property() -> None:
+    builder = (
+        MultipartGroup(bidding_zone=BiddingZone.NO2)
+        .direction(Direction.UP)
+        .resource("NO-RES-001")
+        .for_mtu(MTU)
+    )
+    assert isinstance(builder.group_id, str)
+    assert len(builder.group_id) == 36
+
+
+def test_inclusive_group_id_property() -> None:
+    builder = (
+        InclusiveGroup(bidding_zone=BiddingZone.FI)
+        .direction(Direction.UP)
+        .resource("FI-RES-001")
+        .for_mtu(MTU)
+    )
+    assert isinstance(builder.group_id, str)
+    assert len(builder.group_id) == 36
+
+
+# ---------------------------------------------------------------------------
+# add_component with explicit mrid (line 108)
+# ---------------------------------------------------------------------------
+
+
+def test_exclusive_group_component_explicit_mrid() -> None:
+    custom_mrid = "a" * 36
+    group = (
+        ExclusiveGroup(bidding_zone=BiddingZone.DK1)
+        .direction(Direction.UP)
+        .resource("DK1-RES-001")
+        .product_type(MarketProductType.SCHEDULED_ONLY)
+        .for_mtu(MTU)
+        .add_component(volume_mw=30, price_eur=60.0, mrid=custom_mrid)
+        .add_component(volume_mw=50, price_eur=80.0)
+        .build()
+    )
+    assert group[0].mrid == custom_mrid
+
+
+# ---------------------------------------------------------------------------
+# _make_builder: max_constraint / resting_constraint (lines 112, 114)
+# and _resolve_zone with None zone (lines 743-744)
+# ---------------------------------------------------------------------------
+
+
+def test_make_builder_max_and_resting_constraint() -> None:
+    """Exercise _make_builder paths for max_constraint and resting_constraint."""
+    from nexa_mfrr_eam.bids.complex import _make_builder
+    from nexa_mfrr_eam.types import MarketProductType as MPT
+
+    cfg = {
+        "volume_mw": 20,
+        "price_eur": 50.0,
+        "divisible": False,
+        "max_constraint": 60,
+        "resting_constraint": 30,
+    }
+    builder = _make_builder(
+        cfg,
+        Direction.UP,
+        MTU,
+        MPT.SCHEDULED_ONLY,
+        BiddingZone.NO2,
+        "NO-RES-001",
+        "A01",
+    )
+    assert builder._max_constraint == 60
+    assert builder._resting_constraint == 30
+
+
+def test_resolve_zone_none() -> None:
+    """_resolve_zone returns None when both cfg and group zone are None."""
+    from nexa_mfrr_eam.bids.complex import _resolve_zone
+
+    result = _resolve_zone({}, None)
+    assert result is None
+
+
+# ---------------------------------------------------------------------------
+# InclusiveGroup: mixed MTU and mixed direction validation (lines 804, 807)
+# ---------------------------------------------------------------------------
+
+
+def test_inclusive_group_rejects_mixed_mtus() -> None:
+    with pytest.raises(BidValidationError, match="same MTU"):
+        (
+            InclusiveGroup(bidding_zone=BiddingZone.FI)
+            .direction(Direction.UP)
+            .resource("FI-RES-001")
+            .add_component(volume_mw=10, price_eur=65.0, mtu=MTU)
+            .add_component(volume_mw=10, price_eur=65.0, mtu=MTU2)
+            .build()
+        )
+
+
+def test_inclusive_group_rejects_mixed_directions() -> None:
+    with pytest.raises(BidValidationError, match="same direction"):
+        (
+            InclusiveGroup(bidding_zone=BiddingZone.FI)
+            .resource("FI-RES-001")
+            .for_mtu(MTU)
+            .add_component(volume_mw=10, price_eur=65.0, direction=Direction.UP)
+            .add_component(volume_mw=10, price_eur=65.0, direction=Direction.DOWN)
+            .build()
+        )

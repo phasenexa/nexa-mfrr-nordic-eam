@@ -9,6 +9,7 @@ from __future__ import annotations
 
 from nexa_mfrr_eam.tso.base import TSOConfig
 from nexa_mfrr_eam.tso.energinet import ENERGINET_CONFIG
+from nexa_mfrr_eam.tso.fingrid import FINGRID_CONFIG
 from nexa_mfrr_eam.tso.statnett import STATNETT_CONFIG
 from nexa_mfrr_eam.tso.svk import SVK_CONFIG
 from nexa_mfrr_eam.types import TSO
@@ -32,6 +33,8 @@ def get_tso_config(tso: TSO) -> TSOConfig:
         return SVK_CONFIG
     if tso is TSO.ENERGINET:
         return ENERGINET_CONFIG
+    if tso is TSO.FINGRID:
+        return FINGRID_CONFIG
     raise NotImplementedError(f"TSO config not yet implemented for {tso}")
 
 
@@ -41,4 +44,5 @@ __all__ = [
     "STATNETT_CONFIG",
     "SVK_CONFIG",
     "ENERGINET_CONFIG",
+    "FINGRID_CONFIG",
 ]

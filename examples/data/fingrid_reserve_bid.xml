@@ -1,0 +1,49 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<ReserveBid_MarketDocument xmlns="urn:iec62325.351:tc57wg16:451-7:reservebiddocument:7:2">
+  <mRID>53155d19-d825-4619-8e34-cad03e88bf4c</mRID>
+  <revisionNumber>1</revisionNumber>
+  <type>A37</type>
+  <process.processType>A47</process.processType>
+  <sender_MarketParticipant.mRID codingScheme="A01">10XBSP-FI-001---A</sender_MarketParticipant.mRID>
+  <sender_MarketParticipant.marketRole.type>A46</sender_MarketParticipant.marketRole.type>
+  <receiver_MarketParticipant.mRID codingScheme="A01">10X1001A1001A264</receiver_MarketParticipant.mRID>
+  <receiver_MarketParticipant.marketRole.type>A34</receiver_MarketParticipant.marketRole.type>
+  <createdDateTime>2026-03-24T07:51:21Z</createdDateTime>
+  <reserveBid_Period.timeInterval>
+    <start>2026-03-21T10:00Z</start>
+    <end>2026-03-21T10:15Z</end>
+  </reserveBid_Period.timeInterval>
+  <domain.mRID codingScheme="A01">10YFI-1--------U</domain.mRID>
+  <subject_MarketParticipant.mRID codingScheme="A01">10XBSP-FI-001---A</subject_MarketParticipant.mRID>
+  <subject_MarketParticipant.marketRole.type>A46</subject_MarketParticipant.marketRole.type>
+  <Bid_TimeSeries>
+    <mRID>6f05b38a-3ef1-4eb2-aac4-e5c7e99d46a4</mRID>
+    <auction.mRID>MFRR_ENERGY_ACTIVATION_MARKET</auction.mRID>
+    <businessType>B74</businessType>
+    <acquiring_Domain.mRID codingScheme="A01">10Y1001A1001A91G</acquiring_Domain.mRID>
+    <connecting_Domain.mRID codingScheme="A01">10YFI-1--------U</connecting_Domain.mRID>
+    <quantity_Measure_Unit.name>MAW</quantity_Measure_Unit.name>
+    <currency_Unit.name>EUR</currency_Unit.name>
+    <divisible>A01</divisible>
+    <status>
+      <value>A06</value>
+    </status>
+    <registeredResource.mRID codingScheme="A01">10XHYDRO-FI-001-A</registeredResource.mRID>
+    <flowDirection.direction>A01</flowDirection.direction>
+    <energyPrice_Measure_Unit.name>MWH</energyPrice_Measure_Unit.name>
+    <standard_MarketProduct.marketProductType>A07</standard_MarketProduct.marketProductType>
+    <Period>
+      <timeInterval>
+        <start>2026-03-21T10:00Z</start>
+        <end>2026-03-21T10:15Z</end>
+      </timeInterval>
+      <resolution>PT15M</resolution>
+      <Point>
+        <position>1</position>
+        <quantity.quantity>40</quantity.quantity>
+        <minimum_Quantity.quantity>10</minimum_Quantity.quantity>
+        <energy_Price.amount>68.5</energy_Price.amount>
+      </Point>
+    </Period>
+  </Bid_TimeSeries>
+</ReserveBid_MarketDocument>

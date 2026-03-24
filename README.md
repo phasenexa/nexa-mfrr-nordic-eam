@@ -26,10 +26,10 @@ Built for the 75% who connect via API and build their own.
 | `bids/linked.py` | ✅ Done | TechnicalLink builder; conditional link methods on SimpleBidBuilder |
 | `xml/namespaces.py` | ✅ Done | NBM and IEC namespace URI constants |
 | `xml/serialize.py` | ✅ Done | Pydantic models → CIM XML (XSD-compliant element ordering) |
-| `xml/deserialize.py` | 🔲 Planned | CIM XML → Pydantic models |
+| `xml/deserialize.py` | ✅ Done | CIM XML → Pydantic models; handles both namespace URIs |
 | `tso/base.py` | ✅ Done | TSOConfig strategy dataclass |
 | `tso/statnett.py` | ✅ Done | Statnett (NO) configuration |
-| `tso/fingrid.py` | 🔲 Planned | Fingrid (FI) configuration |
+| `tso/fingrid.py` | ✅ Done | Fingrid (FI) configuration; max 2000 bids, supports inclusive bids |
 | `tso/energinet.py` | ✅ Done | Energinet (DK) configuration; requires_psr_type, no heartbeat, local DA model |
 | `tso/svk.py` | ✅ Done | Svenska kraftnat (SE) configuration |
 | `documents/reserve_bid.py` | ✅ Done | BidDocument factory + BidDocumentBuilder + BuiltBidDocument |
@@ -39,7 +39,7 @@ Built for the 75% who connect via API and build their own.
 | `documents/allocation_result.py` | 🔲 Planned | Allocation result parser |
 | `heartbeat.py` | 🔲 Planned | Heartbeat detection + response |
 | `pandas.py` | 🔲 Planned | DataFrame → Bid conversion |
-| `examples/` | ✅ Done | Jupyter notebooks: Statnett daily bid preparation (GS tax); SVK technically + conditionally linked bids; Energinet simple bids + complex groups |
+| `examples/` | ✅ Done | Jupyter notebooks: Statnett daily bid preparation (GS tax); SVK technically + conditionally linked bids; Energinet simple bids + complex groups; Fingrid bids + XML deserialization round-trip; Fingrid full XML round-trip (serialize → save → load → deserialize) |
 
 ## What this does
 
@@ -51,9 +51,10 @@ This library handles the full BSP workflow for the Nordic mFRR energy activation
 - **Technically linked bids** - `TechnicalLink` builder groups bids across MTUs under a shared link ID to prevent double-activation
 - **Conditionally linked bids** - `.conditionally_available()`, `.conditionally_unavailable()`, `.link_to()` on the bid builder; all three condition codes (A55, A56, A67)
 - **Complex bid groups** - `ExclusiveGroup`, `MultipartGroup`, `InclusiveGroup` builders with group constraints validated at `build()` time
-- **TSO configuration** - Statnett (NO), Svenska kraftnat (SE), and Energinet (DK) fully configured; Fingrid planned
+- **TSO configuration** - All four TSOs configured: Statnett (NO), Fingrid (FI), Energinet (DK), Svenska kraftnat (SE)
 - **Validate before you send** - Common and TSO-configurable validation rules, pre-MARI and post-MARI price limits
 - **Serialize to CIM XML** - Generates compliant `ReserveBid_MarketDocument` XML per the NBM ReserveBid schema with strict XSD element ordering
+- **Deserialize from CIM XML** - `deserialize_reserve_bid_document()` parses incoming XML back to `BidDocumentModel`; accepts both namespace URIs
 - **Timing helpers** - Gate closure calculations, MTU boundaries, DST handling, MARI vs pre-MARI timing
 
 **Planned:**
@@ -61,7 +62,6 @@ This library handles the full BSP workflow for the Nordic mFRR energy activation
 - **Handle activations** - Build activation response documents, track activation state
 - **Heartbeat responder** - Automatic heartbeat processing for Statnett and Svenska kraftnat
 - **Pandas integration** - Build bid portfolios from DataFrames
-- **Deserializer** - Parse incoming CIM XML back to Pydantic models
 
 What it does **not** do: manage your ECP/EDX endpoint. That is infrastructure you deploy and operate separately (see [ECP/EDX Setup](#ecpedx-setup) below). This library generates the XML documents you send through your endpoint.
 
@@ -79,7 +79,7 @@ pip install nexa-mfrr-nordic-eam[pandas]
 
 ## Quick start
 
-> **Note:** Simple bids, technically linked bids, conditional links, complex bid groups (`ExclusiveGroup`, `MultipartGroup`, `InclusiveGroup`), document building, serialization, and timing helpers are implemented. Examples for activation parsing and Pandas integration show the intended API and will work once those modules are complete.
+> **Note:** Simple bids, technically linked bids, conditional links, complex bid groups (`ExclusiveGroup`, `MultipartGroup`, `InclusiveGroup`), document building, serialization, deserialization, and timing helpers are implemented. Examples for activation parsing and Pandas integration show the intended API and will work once those modules are complete.
 
 ### Submit a simple divisible bid to Statnett
 

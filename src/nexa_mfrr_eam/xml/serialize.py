@@ -197,6 +197,14 @@ def _serialize_bid_time_series(
             ts.resting_constraint_duration,
         )
 
+    # 26. minimum_ConstraintDuration.duration (optional)
+    if ts.minimum_constraint_duration is not None:
+        _sub(
+            bts,
+            "minimum_ConstraintDuration.duration",
+            ts.minimum_constraint_duration,
+        )
+
     # 27. maximum_ConstraintDuration.duration (optional)
     if ts.maximum_constraint_duration is not None:
         _sub(

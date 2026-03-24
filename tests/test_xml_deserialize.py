@@ -16,7 +16,7 @@ from nexa_mfrr_eam.types import (
     PointModel,
     ReasonModel,
 )
-from nexa_mfrr_eam.xml.deserialize import deserialize_reserve_bid_document
+from nexa_mfrr_eam.xml.deserialize import _child_attr, deserialize_reserve_bid_document
 from nexa_mfrr_eam.xml.namespaces import IEC_NAMESPACE, NBM_NAMESPACE
 from nexa_mfrr_eam.xml.serialize import serialize_reserve_bid_document
 
@@ -532,6 +532,102 @@ class TestDenmarkSpecificFields:
 # ---------------------------------------------------------------------------
 
 
+class TestOptionalFieldsPresent2:
+    def test_minimum_constraint_duration_survives(self) -> None:
+        bid = _simple_bid(minimum_constraint_duration="PT30M")
+        doc = _build_doc(bids=[bid])
+        result = _roundtrip(doc)
+        assert result.bid_time_series[0].minimum_constraint_duration == "PT30M"
+
+    def test_sender_coding_scheme_defaults_to_a01_when_absent(self) -> None:
+        """_child_attr returns None when codingScheme attribute is missing."""
+        ns = IEC_NAMESPACE
+        xml = (
+            f'<?xml version="1.0"?>'
+            f'<ReserveBid_MarketDocument xmlns="{ns}">'
+            f"<mRID>abc123</mRID>"
+            f"<revisionNumber>1</revisionNumber>"
+            f"<type>A37</type>"
+            f"<process.processType>A47</process.processType>"
+            f"<sender_MarketParticipant.mRID>9999</sender_MarketParticipant.mRID>"
+            f"{_SENDER_ROLE}"
+            f"<receiver_MarketParticipant.mRID>10X1001A1001A38Y"
+            f"</receiver_MarketParticipant.mRID>"
+            f"{_RECEIVER_ROLE}"
+            f"<createdDateTime>2026-03-21T09:00:00Z</createdDateTime>"
+            f"<reserveBid_Period.timeInterval>"
+            f"<start>2026-03-21T10:00Z</start>"
+            f"<end>2026-03-21T10:15Z</end>"
+            f"</reserveBid_Period.timeInterval>"
+            f"<domain.mRID codingScheme='A01'>10YNO-0--------C</domain.mRID>"
+            f"<Bid_TimeSeries>"
+            f"<mRID>bid-1</mRID>"
+            f"<businessType>B74</businessType>"
+            f"{_ACQUIRING}"
+            f"<quantity_Measure_Unit.name>MAW</quantity_Measure_Unit.name>"
+            f"<divisible>A01</divisible>"
+            f"<flowDirection.direction>A01</flowDirection.direction>"
+            f"<Period>"
+            f"<timeInterval>"
+            f"<start>2026-03-21T10:00Z</start>"
+            f"<end>2026-03-21T10:15Z</end>"
+            f"</timeInterval>"
+            f"<resolution>PT15M</resolution>"
+            f"<Point>"
+            f"<position>1</position>"
+            f"<quantity.quantity>50</quantity.quantity>"
+            f"</Point>"
+            f"</Period>"
+            f"</Bid_TimeSeries>"
+            f"</ReserveBid_MarketDocument>"
+        ).encode()
+        result = deserialize_reserve_bid_document(xml)
+        # codingScheme attribute was absent → should default to "A01"
+        assert result.sender_coding_scheme == "A01"
+
+
+# Short aliases used in hand-crafted XML to stay within line length limits
+_SENDER = "<sender_MarketParticipant.mRID codingScheme='A10'>9999"
+_SENDER_END = "</sender_MarketParticipant.mRID>"
+_SENDER_ROLE = (
+    "<sender_MarketParticipant.marketRole.type>A46"
+    "</sender_MarketParticipant.marketRole.type>"
+)
+_RECEIVER = (
+    "<receiver_MarketParticipant.mRID codingScheme='A01'>"
+    "10X1001A1001A38Y</receiver_MarketParticipant.mRID>"
+)
+_RECEIVER_ROLE = (
+    "<receiver_MarketParticipant.marketRole.type>A34"
+    "</receiver_MarketParticipant.marketRole.type>"
+)
+_ACQUIRING = (
+    "<acquiring_Domain.mRID codingScheme='A01'>"
+    "10Y1001A1001A91G</acquiring_Domain.mRID>"
+)
+
+
+class TestChildAttrHelper:
+    def test_returns_none_when_element_absent(self) -> None:
+        """_child_attr returns None when the child element is not found."""
+        from lxml import etree
+
+        ns = IEC_NAMESPACE
+        el = etree.fromstring(f'<root xmlns="{ns}"><other>x</other></root>'.encode())
+        result = _child_attr(el, "missing_element", ns, "codingScheme")
+        assert result is None
+
+    def test_returns_attribute_value_when_present(self) -> None:
+        from lxml import etree
+
+        ns = IEC_NAMESPACE
+        el = etree.fromstring(
+            f'<root xmlns="{ns}"><child codingScheme="A10">val</child></root>'.encode()
+        )
+        result = _child_attr(el, "child", ns, "codingScheme")
+        assert result == "A10"
+
+
 class TestErrorCases:
     def test_malformed_xml_raises(self) -> None:
         with pytest.raises(NexaMFRREAMError, match="Malformed XML"):
@@ -543,4 +639,142 @@ class TestErrorCases:
             b'<ReserveBid_MarketDocument xmlns="urn:some:unknown:namespace"/>'
         )
         with pytest.raises(NexaMFRREAMError, match="Unknown XML namespace"):
+            deserialize_reserve_bid_document(xml)
+
+    def test_missing_required_element_raises(self) -> None:
+        """_req_text raises when a required child element is absent."""
+        ns = IEC_NAMESPACE
+        # Document is missing <mRID> entirely
+        xml = (
+            f'<?xml version="1.0"?>'
+            f'<ReserveBid_MarketDocument xmlns="{ns}">'
+            f"<revisionNumber>1</revisionNumber>"
+            f"</ReserveBid_MarketDocument>"
+        ).encode()
+        with pytest.raises(NexaMFRREAMError, match="Required element"):
+            deserialize_reserve_bid_document(xml)
+
+    def test_missing_reserve_bid_period_time_interval_raises(self) -> None:
+        """Missing <reserveBid_Period.timeInterval> raises NexaMFRREAMError."""
+        ns = IEC_NAMESPACE
+        xml = (
+            f'<?xml version="1.0"?>'
+            f'<ReserveBid_MarketDocument xmlns="{ns}">'
+            f"<mRID>abc123</mRID>"
+            f"<revisionNumber>1</revisionNumber>"
+            f"<type>A37</type>"
+            f"<process.processType>A47</process.processType>"
+            f"{_SENDER}9999{_SENDER_END}"
+            f"{_SENDER_ROLE}"
+            f"{_RECEIVER}"
+            f"{_RECEIVER_ROLE}"
+            f"<createdDateTime>2026-03-21T09:00:00Z</createdDateTime>"
+            f"</ReserveBid_MarketDocument>"
+        ).encode()
+        with pytest.raises(NexaMFRREAMError, match="reserveBid_Period.timeInterval"):
+            deserialize_reserve_bid_document(xml)
+
+    def _minimal_doc_xml(self, ns: str, bts_inner: str) -> bytes:
+        """Return a minimal valid document XML with custom BidTimeSeries content."""
+        return (
+            f'<?xml version="1.0"?>'
+            f'<ReserveBid_MarketDocument xmlns="{ns}">'
+            f"<mRID>abc123</mRID>"
+            f"<revisionNumber>1</revisionNumber>"
+            f"<type>A37</type>"
+            f"<process.processType>A47</process.processType>"
+            f"{_SENDER}{_SENDER_END}"
+            f"{_SENDER_ROLE}"
+            f"{_RECEIVER}"
+            f"{_RECEIVER_ROLE}"
+            f"<createdDateTime>2026-03-21T09:00:00Z</createdDateTime>"
+            f"<reserveBid_Period.timeInterval>"
+            f"<start>2026-03-21T10:00Z</start>"
+            f"<end>2026-03-21T10:15Z</end>"
+            f"</reserveBid_Period.timeInterval>"
+            f"<domain.mRID codingScheme='A01'>10YNO-0--------C</domain.mRID>"
+            f"<Bid_TimeSeries>{bts_inner}</Bid_TimeSeries>"
+            f"</ReserveBid_MarketDocument>"
+        ).encode()
+
+    def test_missing_period_in_bid_time_series_raises(self) -> None:
+        """Missing <Period> inside Bid_TimeSeries raises NexaMFRREAMError."""
+        bts = (
+            "<mRID>bid-1</mRID>"
+            "<businessType>B74</businessType>"
+            f"{_ACQUIRING}"
+            "<quantity_Measure_Unit.name>MAW</quantity_Measure_Unit.name>"
+            "<divisible>A01</divisible>"
+            "<flowDirection.direction>A01</flowDirection.direction>"
+            # <Period> intentionally omitted
+        )
+        xml = self._minimal_doc_xml(IEC_NAMESPACE, bts)
+        with pytest.raises(NexaMFRREAMError, match="Period"):
+            deserialize_reserve_bid_document(xml)
+
+    def test_missing_time_interval_in_period_raises(self) -> None:
+        """Missing <timeInterval> inside Period raises NexaMFRREAMError."""
+        bts = (
+            "<mRID>bid-1</mRID>"
+            "<businessType>B74</businessType>"
+            f"{_ACQUIRING}"
+            "<quantity_Measure_Unit.name>MAW</quantity_Measure_Unit.name>"
+            "<divisible>A01</divisible>"
+            "<flowDirection.direction>A01</flowDirection.direction>"
+            "<Period>"
+            # <timeInterval> intentionally omitted
+            "<resolution>PT15M</resolution>"
+            "<Point><position>1</position><quantity.quantity>50</quantity.quantity></Point>"
+            "</Period>"
+        )
+        xml = self._minimal_doc_xml(IEC_NAMESPACE, bts)
+        with pytest.raises(NexaMFRREAMError, match="timeInterval"):
+            deserialize_reserve_bid_document(xml)
+
+    def test_missing_point_in_period_raises(self) -> None:
+        """Missing <Point> inside Period raises NexaMFRREAMError."""
+        bts = (
+            "<mRID>bid-1</mRID>"
+            "<businessType>B74</businessType>"
+            f"{_ACQUIRING}"
+            "<quantity_Measure_Unit.name>MAW</quantity_Measure_Unit.name>"
+            "<divisible>A01</divisible>"
+            "<flowDirection.direction>A01</flowDirection.direction>"
+            "<Period>"
+            "<timeInterval>"
+            "<start>2026-03-21T10:00Z</start>"
+            "<end>2026-03-21T10:15Z</end>"
+            "</timeInterval>"
+            "<resolution>PT15M</resolution>"
+            # <Point> intentionally omitted
+            "</Period>"
+        )
+        xml = self._minimal_doc_xml(IEC_NAMESPACE, bts)
+        with pytest.raises(NexaMFRREAMError, match="Point"):
+            deserialize_reserve_bid_document(xml)
+
+    def test_missing_status_in_linked_bid_raises(self) -> None:
+        """Missing <status> inside Linked_BidTimeSeries raises NexaMFRREAMError."""
+        bts = (
+            "<mRID>bid-1</mRID>"
+            "<businessType>B74</businessType>"
+            f"{_ACQUIRING}"
+            "<quantity_Measure_Unit.name>MAW</quantity_Measure_Unit.name>"
+            "<divisible>A01</divisible>"
+            "<flowDirection.direction>A01</flowDirection.direction>"
+            "<Period>"
+            "<timeInterval>"
+            "<start>2026-03-21T10:00Z</start>"
+            "<end>2026-03-21T10:15Z</end>"
+            "</timeInterval>"
+            "<resolution>PT15M</resolution>"
+            "<Point><position>1</position><quantity.quantity>50</quantity.quantity></Point>"
+            "</Period>"
+            "<Linked_BidTimeSeries>"
+            "<mRID>linked-bid-1</mRID>"
+            # <status> intentionally omitted
+            "</Linked_BidTimeSeries>"
+        )
+        xml = self._minimal_doc_xml(IEC_NAMESPACE, bts)
+        with pytest.raises(NexaMFRREAMError, match="status"):
             deserialize_reserve_bid_document(xml)

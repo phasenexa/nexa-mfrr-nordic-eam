@@ -42,6 +42,7 @@ from nexa_mfrr_eam.exceptions import (
 from nexa_mfrr_eam.types import (
     TSO,
     BiddingZone,
+    BidDocumentModel,
     CodingScheme,
     ConditionalStatus,
     Direction,
@@ -51,6 +52,7 @@ from nexa_mfrr_eam.types import (
     PeriodShiftPosition,
     ProductionType,
 )
+from nexa_mfrr_eam.xml.deserialize import deserialize_reserve_bid_document
 
 __version__ = "0.3.0b1"
 
@@ -71,9 +73,12 @@ __all__ = [
     "ExclusiveGroup",
     "MultipartGroup",
     "InclusiveGroup",
-    # Document builders
+    # Document builders / parsers
     "BidDocument",
     "BuiltBidDocument",
+    "deserialize_reserve_bid_document",
+    # Internal models (needed for type annotations on parsed results)
+    "BidDocumentModel",
     # Enums
     "MARIMode",
     "Direction",

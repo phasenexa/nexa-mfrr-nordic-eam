@@ -22,7 +22,7 @@ execute-notebooks:
 		--ExecutePreprocessor.timeout=120
 
 test-notebooks:
-	poetry run pytest --nbmake examples/
+	poetry run pytest --nbmake --no-cov examples/
 
 ci: lint typecheck test test-notebooks
 

@@ -36,9 +36,9 @@ class TestBidDocumentFactory:
         result = BidDocument(tso=TSO.STATNETT)
         assert isinstance(result, BidDocumentBuilder)
 
-    def test_unsupported_tso_raises(self) -> None:
-        with pytest.raises(NotImplementedError):
-            BidDocument(tso=TSO.FINGRID)
+    def test_fingrid_tso_supported(self) -> None:
+        result = BidDocument(tso=TSO.FINGRID)
+        assert isinstance(result, BidDocumentBuilder)
 
 
 class TestBidDocumentBuilder:

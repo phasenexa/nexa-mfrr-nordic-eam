@@ -39,7 +39,7 @@ Built for the 75% who connect via API and build their own.
 | `documents/allocation_result.py` | 🔲 Planned | Allocation result parser |
 | `heartbeat.py` | 🔲 Planned | Heartbeat detection + response |
 | `pandas.py` | 🔲 Planned | DataFrame → Bid conversion |
-| `examples/` | ✅ Done | Jupyter notebooks: Statnett daily bid preparation (GS tax); SVK technically + conditionally linked bids; Energinet simple bids + complex groups |
+| `examples/` | ✅ Done | Jupyter notebooks: Statnett daily bid preparation (GS tax); SVK technically + conditionally linked bids; Energinet simple bids + complex groups; Fingrid bids + XML deserialization round-trip |
 
 ## What this does
 

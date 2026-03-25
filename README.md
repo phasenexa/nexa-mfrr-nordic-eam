@@ -36,7 +36,7 @@ Built for the 75% who connect via API and build their own.
 | `documents/acknowledgement.py` | Planned | ACK/NACK parser for bid submission responses |
 | `pandas.py` | Planned | DataFrame to Bid conversion |
 | `pricing.py` | Done | GS tax (grunnrenteskatt) price adjustment: `gs_adjusted_price`, `gs_adjust_bids` |
-| `link_ordering.py` | Done | Technical link ordering per PowerDesk convention: `assign_technical_links` |
+| `link_ordering.py` | Done | Technical link ordering: `assign_technical_links` |
 | `examples/` | Done | Jupyter notebooks: Statnett daily bid prep; GS tax pricing; technical link ordering; SVK linked bids; Energinet simple + complex; Fingrid bids + deserialization; Fingrid XML round-trip |
 
 ## What this does
@@ -55,7 +55,7 @@ This library covers the bid submission side of the mFRR EAM workflow: building b
 - **Deserialize from CIM XML** - `deserialize_reserve_bid_document()` parses XML back to `BidDocumentModel`; accepts all three namespace URIs (NBM v7.2, IEC v7.2, IEC v7.4)
 - **Timing helpers** - Gate closure calculations, MTU boundaries, DST handling, MARI vs pre-MARI timing
 - **GS tax pricing** - `gs_adjusted_price` and `gs_adjust_bids` apply the Norwegian resource rent tax formula with per-direction clamping and Statnett price limit enforcement
-- **Technical link ordering** - `assign_technical_links` assigns consistent link UUIDs to bids by price rank following the PowerDesk convention
+- **Technical link ordering** - `assign_technical_links` assigns consistent link UUIDs to bids by price rank
 
 **Planned:**
 
@@ -487,7 +487,7 @@ nexa-mfrr-nordic-eam/
       svk.py                 # SE-specific rules
     timing.py                # MTU calc, gate closures, DST
     pricing.py               # GS tax (grunnrenteskatt) price adjustment
-    link_ordering.py         # Technical link ordering per PowerDesk convention
+    link_ordering.py         # Technical link ordering
     pandas.py                # DataFrame -> Bid conversion
   tests/
     conftest.py

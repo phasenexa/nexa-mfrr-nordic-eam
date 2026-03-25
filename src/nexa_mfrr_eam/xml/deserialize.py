@@ -1,9 +1,18 @@
 """Deserialize CIM XML to BidDocumentModel using lxml.
 
-Accepts both known namespace URIs for ``ReserveBid_MarketDocument``:
+Accepts all three known namespace URIs for ``ReserveBid_MarketDocument``:
 
-* :data:`~nexa_mfrr_eam.xml.namespaces.IEC_NAMESPACE` (Statnett example / default)
-* :data:`~nexa_mfrr_eam.xml.namespaces.NBM_NAMESPACE` (vendored XSD)
+* :data:`~nexa_mfrr_eam.xml.namespaces.NBM_NAMESPACE` (NBM v7.2 XSD)
+* :data:`~nexa_mfrr_eam.xml.namespaces.IEC_NAMESPACE` (IEC v7.2, Statnett example)
+* :data:`~nexa_mfrr_eam.xml.namespaces.IEC_NAMESPACE_V74` (IEC v7.4)
+
+Element names for the three unit name fields differ between versions:
+
+* v7.2: ``quantity_Measure_Unit.name``, ``energyPrice_Measure_Unit.name``
+* v7.4: ``quantity_Measurement_Unit.name``, ``energyPrice_Measurement_Unit.name``
+
+The deserializer detects the version from the namespace URI and reads whichever
+element name is correct for that version.
 
 Datetime formats
 ----------------
@@ -27,7 +36,12 @@ from nexa_mfrr_eam.types import (
     PointModel,
     ReasonModel,
 )
-from nexa_mfrr_eam.xml.namespaces import KNOWN_NAMESPACES
+from nexa_mfrr_eam.xml.namespaces import (
+    ENERGY_PRICE_UNIT_ELEMENT,
+    KNOWN_NAMESPACES,
+    QUANTITY_UNIT_ELEMENT,
+    version_for_namespace,
+)
 
 # ---------------------------------------------------------------------------
 # Internal helpers
@@ -147,12 +161,16 @@ def _parse_linked_bid(linked_el: etree._Element, ns: str) -> LinkedBidTimeSeries
 
 def _parse_bid_time_series(bts_el: etree._Element, ns: str) -> BidTimeSeriesModel:
     """Parse a ``Bid_TimeSeries`` element into a :class:`BidTimeSeriesModel`."""
+    schema_ver = version_for_namespace(ns)
+    qty_unit_tag = QUANTITY_UNIT_ELEMENT[schema_ver]
+    ep_unit_tag = ENERGY_PRICE_UNIT_ELEMENT[schema_ver]
+
     mrid = _req_text(bts_el, "mRID", ns)
     auction_mrid = _child_text(bts_el, "auction.mRID", ns)
     business_type = _req_text(bts_el, "businessType", ns)
     acquiring_domain_mrid = _req_text(bts_el, "acquiring_Domain.mRID", ns)
     connecting_domain_mrid = _child_text(bts_el, "connecting_Domain.mRID", ns)
-    quantity_measure_unit_name = _req_text(bts_el, "quantity_Measure_Unit.name", ns)
+    quantity_measure_unit_name = _req_text(bts_el, qty_unit_tag, ns)
     currency_unit_name = _child_text(bts_el, "currency_Unit.name", ns)
     divisible_code = _req_text(bts_el, "divisible", ns)
 
@@ -175,9 +193,7 @@ def _parse_bid_time_series(bts_el: etree._Element, ns: str) -> BidTimeSeriesMode
         registered_resource_coding_scheme = res_el.get("codingScheme")
 
     flow_direction = _req_text(bts_el, "flowDirection.direction", ns)
-    energy_price_measure_unit_name = _child_text(
-        bts_el, "energyPrice_Measure_Unit.name", ns
-    )
+    energy_price_measure_unit_name = _child_text(bts_el, ep_unit_tag, ns)
     activation_constraint = _child_text(
         bts_el, "activation_ConstraintDuration.duration", ns
     )
@@ -268,7 +284,8 @@ def _parse_bid_time_series(bts_el: etree._Element, ns: str) -> BidTimeSeriesMode
 def deserialize_reserve_bid_document(xml_bytes: bytes) -> BidDocumentModel:
     """Deserialize a ``ReserveBid_MarketDocument`` XML byte string.
 
-    Accepts documents using either the NBM or IEC namespace URI.
+    Accepts documents using any of the three known namespace URIs (NBM v7.2,
+    IEC v7.2, IEC v7.4).  Element names are resolved from the namespace.
 
     Args:
         xml_bytes: UTF-8 encoded CIM XML bytes.

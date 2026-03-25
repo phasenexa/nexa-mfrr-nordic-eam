@@ -33,6 +33,7 @@ from nexa_mfrr_eam.types import (
     BidTimeSeriesModel,
     MARIMode,
 )
+from nexa_mfrr_eam.xml.namespaces import DEFAULT_SCHEMA_VERSION, SchemaVersion
 from nexa_mfrr_eam.xml.serialize import serialize_reserve_bid_document
 
 
@@ -218,16 +219,26 @@ class BuiltBidDocument:
             requires_psr_type=self._requires_psr_type,
         )
 
-    def to_xml(self, pretty_print: bool = True) -> bytes:
+    def to_xml(
+        self,
+        pretty_print: bool = True,
+        schema_version: SchemaVersion = DEFAULT_SCHEMA_VERSION,
+    ) -> bytes:
         """Serialize this document to CIM XML bytes.
 
         Args:
             pretty_print: Whether to indent the output.  Defaults to ``True``.
+            schema_version: Target schema version.  Controls the namespace URI
+                and element names for the unit name fields.  Defaults to v7.4.
 
         Returns:
             UTF-8 encoded XML bytes beginning with an XML declaration.
         """
-        return serialize_reserve_bid_document(self._model, pretty_print=pretty_print)
+        return serialize_reserve_bid_document(
+            self._model,
+            pretty_print=pretty_print,
+            schema_version=schema_version,
+        )
 
 
 def BidDocument(tso: TSO) -> BidDocumentBuilder:  # noqa: N802  (intentional factory function named as class)

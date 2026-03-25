@@ -17,7 +17,11 @@ from nexa_mfrr_eam.types import (
     ReasonModel,
 )
 from nexa_mfrr_eam.xml.deserialize import _child_attr, deserialize_reserve_bid_document
-from nexa_mfrr_eam.xml.namespaces import IEC_NAMESPACE, NBM_NAMESPACE
+from nexa_mfrr_eam.xml.namespaces import (
+    IEC_NAMESPACE,
+    NBM_NAMESPACE,
+    SchemaVersion,
+)
 from nexa_mfrr_eam.xml.serialize import serialize_reserve_bid_document
 
 MTU_DT = datetime(2026, 3, 21, 10, 0, tzinfo=UTC)
@@ -85,9 +89,9 @@ def _build_doc(
 
 def _roundtrip(
     doc: BidDocumentModel,
-    namespace: str = IEC_NAMESPACE,
+    schema_version: SchemaVersion = SchemaVersion.V74,
 ) -> BidDocumentModel:
-    xml_bytes = serialize_reserve_bid_document(doc, namespace=namespace)
+    xml_bytes = serialize_reserve_bid_document(doc, schema_version=schema_version)
     return deserialize_reserve_bid_document(xml_bytes)
 
 
@@ -202,25 +206,39 @@ class TestRoundTrip:
 
 
 class TestNamespaces:
-    def test_iec_namespace_accepted(self) -> None:
+    def test_iec_v72_namespace_accepted(self) -> None:
         doc = _build_doc()
-        xml_bytes = serialize_reserve_bid_document(doc, namespace=IEC_NAMESPACE)
+        xml_bytes = serialize_reserve_bid_document(
+            doc, schema_version=SchemaVersion.V72
+        )
         result = deserialize_reserve_bid_document(xml_bytes)
         assert result.mrid == doc.mrid
 
     def test_nbm_namespace_accepted(self) -> None:
         doc = _build_doc()
-        xml_bytes = serialize_reserve_bid_document(doc, namespace=NBM_NAMESPACE)
+        # Serialize as v7.2 then swap to NBM namespace (same element names)
+        xml_bytes = serialize_reserve_bid_document(
+            doc, schema_version=SchemaVersion.V72
+        )
+        xml_bytes = xml_bytes.replace(IEC_NAMESPACE.encode(), NBM_NAMESPACE.encode())
         result = deserialize_reserve_bid_document(xml_bytes)
         assert result.mrid == doc.mrid
 
-    def test_both_namespaces_yield_same_result(self) -> None:
+    def test_iec_v74_namespace_accepted(self) -> None:
         doc = _build_doc()
-        result_iec = _roundtrip(doc, namespace=IEC_NAMESPACE)
-        result_nbm = _roundtrip(doc, namespace=NBM_NAMESPACE)
-        assert result_iec.mrid == result_nbm.mrid
-        assert result_iec.sender_mrid == result_nbm.sender_mrid
-        assert len(result_iec.bid_time_series) == len(result_nbm.bid_time_series)
+        xml_bytes = serialize_reserve_bid_document(
+            doc, schema_version=SchemaVersion.V74
+        )
+        result = deserialize_reserve_bid_document(xml_bytes)
+        assert result.mrid == doc.mrid
+
+    def test_all_namespaces_yield_same_result(self) -> None:
+        doc = _build_doc()
+        result_v72 = _roundtrip(doc, schema_version=SchemaVersion.V72)
+        result_v74 = _roundtrip(doc, schema_version=SchemaVersion.V74)
+        assert result_v72.mrid == result_v74.mrid
+        assert result_v72.sender_mrid == result_v74.sender_mrid
+        assert len(result_v72.bid_time_series) == len(result_v74.bid_time_series)
 
     def test_unknown_namespace_raises(self) -> None:
         xml = (

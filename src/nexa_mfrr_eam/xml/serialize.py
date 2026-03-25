@@ -1,8 +1,12 @@
 """Serialize BidDocumentModel to CIM XML using lxml.
 
-Element names and ordering follow the XSD sequence defined in CLAUDE.md.
-The reference file ``SN_Simple_ReserveBid_MarketDocument.xml`` is the
-canonical example this serializer targets.
+Element names and ordering are version-aware:
+
+* v7.2 (NBM and IEC): short unit names (``quantity_Measure_Unit.name``);
+  ``inclusiveBidsIdentification`` is the last element in ``Bid_TimeSeries``.
+* v7.4 (IEC, default): long unit names (``quantity_Measurement_Unit.name``);
+  ``inclusiveBidsIdentification`` and ``mktPSRType.psrType`` appear before
+  ``Period``.
 
 Datetime formats
 ----------------
@@ -18,7 +22,13 @@ from decimal import Decimal
 from lxml import etree
 
 from nexa_mfrr_eam.types import BidDocumentModel, BidTimeSeriesModel
-from nexa_mfrr_eam.xml.namespaces import DEFAULT_SERIALIZE_NAMESPACE
+from nexa_mfrr_eam.xml.namespaces import (
+    DEFAULT_SCHEMA_VERSION,
+    ENERGY_PRICE_UNIT_ELEMENT,
+    NAMESPACE_FOR_VERSION,
+    QUANTITY_UNIT_ELEMENT,
+    SchemaVersion,
+)
 
 
 def _fmt_created(dt: datetime) -> str:
@@ -100,14 +110,20 @@ def _sub_attr(
 def _serialize_bid_time_series(
     parent: etree._Element,
     ts: BidTimeSeriesModel,
+    schema_version: SchemaVersion = DEFAULT_SCHEMA_VERSION,
 ) -> None:
     """Append a ``Bid_TimeSeries`` element to *parent*.
 
-    Element ordering follows the mandatory XSD sequence (CLAUDE.md).
+    Element ordering and element names are version-aware:
+
+    * v7.2: short unit names; ``inclusiveBidsIdentification`` is last.
+    * v7.4: long unit names; ``inclusiveBidsIdentification`` and
+      ``mktPSRType.psrType`` appear before ``Period``.
 
     Args:
         parent: The ``ReserveBid_MarketDocument`` root element.
         ts: The bid time series model to serialize.
+        schema_version: Target schema version (defaults to v7.4).
     """
     bts: etree._Element = etree.SubElement(parent, "Bid_TimeSeries")
 
@@ -136,8 +152,8 @@ def _serialize_bid_time_series(
             "A01",
         )
 
-    # 7. quantity_Measure_Unit.name
-    _sub(bts, "quantity_Measure_Unit.name", ts.quantity_measure_unit_name)
+    # 7. quantity_Measure(ment)_Unit.name — name differs by version
+    _sub(bts, QUANTITY_UNIT_ELEMENT[schema_version], ts.quantity_measure_unit_name)
 
     # 8. currency_Unit.name (optional but present in reference XML)
     if ts.currency_unit_name:
@@ -177,9 +193,13 @@ def _serialize_bid_time_series(
     # 18. flowDirection.direction
     _sub(bts, "flowDirection.direction", ts.flow_direction)
 
-    # 20. energyPrice_Measure_Unit.name (optional per XSD, present in reference)
+    # 20. energyPrice_Measure(ment)_Unit.name (optional) — name differs by version
     if ts.energy_price_measure_unit_name:
-        _sub(bts, "energyPrice_Measure_Unit.name", ts.energy_price_measure_unit_name)
+        _sub(
+            bts,
+            ENERGY_PRICE_UNIT_ELEMENT[schema_version],
+            ts.energy_price_measure_unit_name,
+        )
 
     # 24. activation_ConstraintDuration.duration (optional)
     if ts.activation_constraint_duration is not None:
@@ -221,6 +241,14 @@ def _serialize_bid_time_series(
             ts.standard_market_product_type,
         )
 
+    # v7.4: inclusiveBidsIdentification and mktPSRType.psrType appear before Period.
+    # v7.2: these come after Period / Linked_BidTimeSeries (handled below).
+    if schema_version == SchemaVersion.V74:
+        if ts.inclusive_bids_identification is not None:
+            _sub(bts, "inclusiveBidsIdentification", ts.inclusive_bids_identification)
+        if ts.psr_type is not None:
+            _sub(bts, "mktPSRType.psrType", ts.psr_type)
+
     # 31. Period (1..*)
     period_el: etree._Element = etree.SubElement(bts, "Period")
     ti_el: etree._Element = etree.SubElement(period_el, "timeInterval")
@@ -258,14 +286,15 @@ def _serialize_bid_time_series(
         linked_status_el: etree._Element = etree.SubElement(linked_el, "status")
         _sub(linked_status_el, "value", linked.status_value)
 
-    # 38. inclusiveBidsIdentification (optional, last element per standard XSD)
-    if ts.inclusive_bids_identification is not None:
-        _sub(bts, "inclusiveBidsIdentification", ts.inclusive_bids_identification)
+    # v7.2: inclusiveBidsIdentification is the last element; mktPSRType.psrType
+    # and Note are Denmark-specific extensions appended after.
+    if schema_version != SchemaVersion.V74:
+        if ts.inclusive_bids_identification is not None:
+            _sub(bts, "inclusiveBidsIdentification", ts.inclusive_bids_identification)
+        if ts.psr_type is not None:
+            _sub(bts, "mktPSRType.psrType", ts.psr_type)
 
-    # Denmark-specific schema extensions (not in standard NBM XSD).
-    # Position is after inclusiveBidsIdentification pending the DK XSD.
-    if ts.psr_type is not None:
-        _sub(bts, "mktPSRType.psrType", ts.psr_type)
+    # Note is Denmark-specific and not in any standard XSD; always append last.
     if ts.note is not None:
         _sub(bts, "Note", ts.note)
 
@@ -273,17 +302,18 @@ def _serialize_bid_time_series(
 def serialize_reserve_bid_document(
     doc: BidDocumentModel,
     pretty_print: bool = True,
-    namespace: str = DEFAULT_SERIALIZE_NAMESPACE,
+    schema_version: SchemaVersion = DEFAULT_SCHEMA_VERSION,
 ) -> bytes:
     """Serialize a :class:`~nexa_mfrr_eam.types.BidDocumentModel` to XML bytes.
 
-    The output follows the element ordering required by the XSD and matches the
-    Statnett reference file structure.
+    The output follows the element ordering and element names required by the
+    target schema version.  Defaults to v7.4 (widest compatibility).
 
     Args:
         doc: The document model to serialize.
         pretty_print: Whether to indent the XML output.
-        namespace: The XML namespace URI to use as the default namespace.
+        schema_version: Target schema version; controls the namespace URI and
+            element names for the three unit name fields.
 
     Returns:
         UTF-8 encoded XML bytes with an XML declaration.
@@ -292,6 +322,7 @@ def serialize_reserve_bid_document(
     # nsmap as Mapping[str, str] and does not model this, so we cast.
     from typing import Any
 
+    namespace = NAMESPACE_FOR_VERSION[schema_version]
     _nsmap: Any = {None: namespace}
     root: etree._Element = etree.Element("ReserveBid_MarketDocument", nsmap=_nsmap)
 
@@ -349,7 +380,7 @@ def serialize_reserve_bid_document(
             )
 
     for ts in doc.bid_time_series:
-        _serialize_bid_time_series(root, ts)
+        _serialize_bid_time_series(root, ts, schema_version)
 
     return etree.tostring(
         root,

@@ -444,6 +444,56 @@ class TestOptionalElements:
         raw = self._serialize_with_constraints()
         assert b"connecting_Domain.mRID" not in raw
 
+    def test_inclusive_bids_identification_serialized_v72(self) -> None:
+        raw_v72 = serialize_reserve_bid_document(
+            _build_doc_model(
+                bids=[
+                    BidTimeSeriesModel(
+                        mrid=str(uuid.uuid4()),
+                        divisible_code="A01",
+                        flow_direction="A01",
+                        period=PeriodModel(
+                            time_interval_start=MTU_DT,
+                            time_interval_end=MTU_END,
+                            point=PointModel(
+                                quantity=Decimal("20"),
+                                energy_price=Decimal("50"),
+                            ),
+                        ),
+                        inclusive_bids_identification="INCL-GROUP-001",
+                    )
+                ]
+            ),
+            schema_version=SchemaVersion.V72,
+        )
+        assert b"inclusiveBidsIdentification" in raw_v72
+        assert b"INCL-GROUP-001" in raw_v72
+
+    def test_psr_type_serialized_v72(self) -> None:
+        raw_v72 = serialize_reserve_bid_document(
+            _build_doc_model(
+                bids=[
+                    BidTimeSeriesModel(
+                        mrid=str(uuid.uuid4()),
+                        divisible_code="A01",
+                        flow_direction="A01",
+                        period=PeriodModel(
+                            time_interval_start=MTU_DT,
+                            time_interval_end=MTU_END,
+                            point=PointModel(
+                                quantity=Decimal("20"),
+                                energy_price=Decimal("50"),
+                            ),
+                        ),
+                        psr_type="B19",
+                    )
+                ]
+            ),
+            schema_version=SchemaVersion.V72,
+        )
+        assert b"mktPSRType.psrType" in raw_v72
+        assert b"B19" in raw_v72
+
 
 # ---------------------------------------------------------------------------
 # Reason elements

@@ -7,7 +7,7 @@
 
 > **This project is a work in progress.** The API, documentation, and feature set are under active development and subject to change. If you want to get involved, receive progress updates, or have feedback, please [open an issue](https://github.com/phasenexa/nexa-mfrr-nordic-eam/issues) or contact the repo admin.
 
-Python library for building, validating, and serializing mFRR energy activation market bids for the Nordic TSOs (Statnett, Fingrid, Energinet, Svenska kraftnat). Also parses acknowledgement responses.
+Python library for building, validating, and serializing mFRR energy activation market bids for the Nordic TSOs (Statnett, Fingrid, Energinet, Svenska kraftnat).
 
 Built for the 75% who connect via API and build their own.
 
@@ -35,7 +35,7 @@ Built for the 75% who connect via API and build their own.
 | `documents/reserve_bid.py` | Done | BidDocument factory + BidDocumentBuilder + BuiltBidDocument |
 | `documents/acknowledgement.py` | Planned | ACK/NACK parser for bid submission responses |
 | `pandas.py` | Planned | DataFrame to Bid conversion |
-| `examples/` | Done | Jupyter notebooks: Statnett daily bid prep (GS tax); SVK linked bids; Energinet simple + complex; Fingrid round-trip |
+| `examples/` | Done | Jupyter notebooks: Statnett daily bid prep (GS tax); SVK linked bids; Energinet simple + complex; Fingrid bids + deserialization; Fingrid XML round-trip |
 
 ## What this does
 
@@ -448,6 +448,8 @@ nexa-mfrr-nordic-eam/
     svk_linked_bids.ipynb
     energinet_simple_bids.ipynb
     energinet_complex_bids.ipynb
+    fingrid_bids_and_deserialization.ipynb
+    fingrid_xml_roundtrip.ipynb
     data/
   src/nexa_mfrr_eam/
     __init__.py              # Public API re-exports
@@ -483,10 +485,13 @@ nexa-mfrr-nordic-eam/
     conftest.py
     fixtures/                # Example XML files
     test_bids.py
+    test_complex.py
     test_config.py
     test_documents.py
     test_linked.py
     test_timing.py
+    test_tso_fingrid.py
+    test_xml_deserialize.py
     test_xml_serialize.py
 ```
 

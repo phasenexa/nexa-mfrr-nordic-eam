@@ -56,6 +56,8 @@ The market will transition to the European MARI platform at a later date. This c
 - `xml/` - Serialization and deserialization between Pydantic models and IEC CIM XML. Uses `lxml` for XML generation. XSD schemas vendored in `xml/schemas/`. `namespaces.py` handles the multiple namespace URIs and schema versions.
 - `tso/` - TSO-specific configuration and validation overrides. Each TSO module defines which national attributes are supported, specific validation rules, and any schema deviations.
 - `timing.py` - Pure functions for MTU calculations, gate closure times, DST handling, MARI timing differences.
+- `pricing.py` - GS tax (grunnrenteskatt) price adjustment. `gs_adjusted_price` for single MTU, `gs_adjust_bids` for batch adjustment of `BidTimeSeriesModel` lists. Applies formula `tier + rate*(DA-tier)` with per-direction clamping and Statnett price limits.
+- `link_ordering.py` - Technical link ordering per PowerDesk convention. `assign_technical_links` assigns consistent UUID link IDs to bids by price rank across MTUs.
 - `pandas.py` - Optional module (guarded import). Converts DataFrames to bid objects.
 
 ### Key design decisions

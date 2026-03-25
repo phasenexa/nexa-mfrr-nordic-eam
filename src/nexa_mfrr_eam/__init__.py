@@ -39,6 +39,8 @@ from nexa_mfrr_eam.exceptions import (
     NaiveDatetimeError,
     NexaMFRREAMError,
 )
+from nexa_mfrr_eam.link_ordering import assign_technical_links
+from nexa_mfrr_eam.pricing import gs_adjust_bids, gs_adjusted_price
 from nexa_mfrr_eam.types import (
     TSO,
     BiddingZone,
@@ -74,6 +76,11 @@ __all__ = [
     "ExclusiveGroup",
     "MultipartGroup",
     "InclusiveGroup",
+    # Pricing utilities
+    "gs_adjusted_price",
+    "gs_adjust_bids",
+    # Link ordering
+    "assign_technical_links",
     # Document builders / parsers
     "BidDocument",
     "BuiltBidDocument",

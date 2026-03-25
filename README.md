@@ -35,7 +35,9 @@ Built for the 75% who connect via API and build their own.
 | `documents/reserve_bid.py` | Done | BidDocument factory + BidDocumentBuilder + BuiltBidDocument |
 | `documents/acknowledgement.py` | Planned | ACK/NACK parser for bid submission responses |
 | `pandas.py` | Planned | DataFrame to Bid conversion |
-| `examples/` | Done | Jupyter notebooks: Statnett daily bid prep (GS tax); SVK linked bids; Energinet simple + complex; Fingrid bids + deserialization; Fingrid XML round-trip |
+| `pricing.py` | Done | GS tax (grunnrenteskatt) price adjustment: `gs_adjusted_price`, `gs_adjust_bids` |
+| `link_ordering.py` | Done | Technical link ordering per PowerDesk convention: `assign_technical_links` |
+| `examples/` | Done | Jupyter notebooks: Statnett daily bid prep; GS tax pricing; technical link ordering; SVK linked bids; Energinet simple + complex; Fingrid bids + deserialization; Fingrid XML round-trip |
 
 ## What this does
 
@@ -52,6 +54,8 @@ This library covers the bid submission side of the mFRR EAM workflow: building b
 - **Serialize to CIM XML** - Generates compliant `ReserveBid_MarketDocument` XML with strict XSD element ordering
 - **Deserialize from CIM XML** - `deserialize_reserve_bid_document()` parses XML back to `BidDocumentModel`; accepts all three namespace URIs (NBM v7.2, IEC v7.2, IEC v7.4)
 - **Timing helpers** - Gate closure calculations, MTU boundaries, DST handling, MARI vs pre-MARI timing
+- **GS tax pricing** - `gs_adjusted_price` and `gs_adjust_bids` apply the Norwegian resource rent tax formula with per-direction clamping and Statnett price limit enforcement
+- **Technical link ordering** - `assign_technical_links` assigns consistent link UUIDs to bids by price rank following the PowerDesk convention
 
 **Planned:**
 
@@ -450,6 +454,8 @@ nexa-mfrr-nordic-eam/
     energinet_complex_bids.ipynb
     fingrid_bids_and_deserialization.ipynb
     fingrid_xml_roundtrip.ipynb
+    gs_tax_pricing.ipynb
+    technical_link_ordering.ipynb
     data/
   src/nexa_mfrr_eam/
     __init__.py              # Public API re-exports
@@ -480,6 +486,8 @@ nexa-mfrr-nordic-eam/
       statnett.py            # NO-specific rules
       svk.py                 # SE-specific rules
     timing.py                # MTU calc, gate closures, DST
+    pricing.py               # GS tax (grunnrenteskatt) price adjustment
+    link_ordering.py         # Technical link ordering per PowerDesk convention
     pandas.py                # DataFrame -> Bid conversion
   tests/
     conftest.py
@@ -488,7 +496,9 @@ nexa-mfrr-nordic-eam/
     test_complex.py
     test_config.py
     test_documents.py
+    test_link_ordering.py
     test_linked.py
+    test_pricing.py
     test_timing.py
     test_tso_fingrid.py
     test_xml_deserialize.py

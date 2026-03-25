@@ -1,6 +1,6 @@
-"""Technical link ordering for mFRR bids following the PowerDesk convention.
+"""Technical link ordering for mFRR bids.
 
-PowerDesk assigns technical links to all bids, not just those that need
+This library can assign technical links to all bids, not just those that need
 double-activation protection.  The link ordering follows specific rules that
 encode the multipart price stack hierarchy across time:
 

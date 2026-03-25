@@ -5,7 +5,7 @@
 Add two utility modules to `nexa-mfrr-nordic-eam`:
 
 1. A resource rent tax (Grunnrenteskatt / GS tax) price adjustment calculator for Norwegian mFRR bids
-2. A technical link ordering utility that assigns link IDs to a set of bids following the PowerDesk convention
+2. A technical link ordering utility that assigns link IDs to a set of bids
 
 Both should include Jupyter notebook examples in `examples/`.
 
@@ -118,8 +118,6 @@ Add `gs_adjusted_price` and `gs_adjust_bids` to `__init__.py` re-exports.
 ## 2. Technical Link Ordering
 
 ### Background
-
-PowerDesk assigns technical links to all bids, not just those that need double-activation protection. The link ordering follows specific rules that encode the multipart price stack hierarchy across time. These rules come from internal PowerDesk documentation (not the official implementation guide).
 
 ### Rules
 

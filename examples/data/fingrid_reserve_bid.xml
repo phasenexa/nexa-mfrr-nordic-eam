@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <ReserveBid_MarketDocument xmlns="urn:iec62325.351:tc57wg16:451-7:reservebiddocument:7:4">
-  <mRID>b184af3b-dc71-40ba-a3bf-6cd1e27ea7a6</mRID>
+  <mRID>780b9d69-23c8-4da1-a303-da7875573259</mRID>
   <revisionNumber>1</revisionNumber>
   <type>A37</type>
   <process.processType>A47</process.processType>
@@ -8,7 +8,7 @@
   <sender_MarketParticipant.marketRole.type>A46</sender_MarketParticipant.marketRole.type>
   <receiver_MarketParticipant.mRID codingScheme="A01">10X1001A1001A264</receiver_MarketParticipant.mRID>
   <receiver_MarketParticipant.marketRole.type>A34</receiver_MarketParticipant.marketRole.type>
-  <createdDateTime>2026-03-25T14:08:35Z</createdDateTime>
+  <createdDateTime>2026-03-25T14:13:44Z</createdDateTime>
   <reserveBid_Period.timeInterval>
     <start>2026-03-21T10:00Z</start>
     <end>2026-03-21T10:15Z</end>
@@ -17,7 +17,7 @@
   <subject_MarketParticipant.mRID codingScheme="A01">10XBSP-FI-001---A</subject_MarketParticipant.mRID>
   <subject_MarketParticipant.marketRole.type>A46</subject_MarketParticipant.marketRole.type>
   <Bid_TimeSeries>
-    <mRID>1cc88de3-c8ad-4c12-9b2f-2565dfa068d3</mRID>
+    <mRID>d8bc2d68-8e26-408a-b61c-8107f16d965d</mRID>
     <auction.mRID>MFRR_ENERGY_ACTIVATION_MARKET</auction.mRID>
     <businessType>B74</businessType>
     <acquiring_Domain.mRID codingScheme="A01">10Y1001A1001A91G</acquiring_Domain.mRID>

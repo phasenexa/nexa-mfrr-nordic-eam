@@ -14,7 +14,11 @@ from nexa_mfrr_eam.types import (
     PointModel,
     ReasonModel,
 )
-from nexa_mfrr_eam.xml.namespaces import IEC_NAMESPACE, NBM_NAMESPACE
+from nexa_mfrr_eam.xml.namespaces import (
+    IEC_NAMESPACE,
+    IEC_NAMESPACE_V74,
+    SchemaVersion,
+)
 from nexa_mfrr_eam.xml.serialize import serialize_reserve_bid_document
 
 MTU_DT = datetime(2026, 3, 21, 10, 0, tzinfo=UTC)
@@ -95,15 +99,15 @@ class TestSerializeFormat:
         root = _parse_xml(serialize_reserve_bid_document(doc))
         assert etree.QName(root.tag).localname == "ReserveBid_MarketDocument"
 
-    def test_uses_iec_namespace_by_default(self) -> None:
+    def test_uses_iec_v74_namespace_by_default(self) -> None:
         doc = _build_doc_model()
         result = serialize_reserve_bid_document(doc)
-        assert IEC_NAMESPACE.encode() in result
+        assert IEC_NAMESPACE_V74.encode() in result
 
-    def test_custom_namespace_accepted(self) -> None:
+    def test_v72_schema_version_uses_iec_v72_namespace(self) -> None:
         doc = _build_doc_model()
-        result = serialize_reserve_bid_document(doc, namespace=NBM_NAMESPACE)
-        assert NBM_NAMESPACE.encode() in result
+        result = serialize_reserve_bid_document(doc, schema_version=SchemaVersion.V72)
+        assert IEC_NAMESPACE.encode() in result
 
     def test_pretty_print_false_no_newlines(self) -> None:
         doc = _build_doc_model()
@@ -121,7 +125,7 @@ class TestDocumentHeader:
     def setup_method(self) -> None:
         doc = _build_doc_model()
         raw = serialize_reserve_bid_document(doc)
-        ns = IEC_NAMESPACE
+        ns = IEC_NAMESPACE_V74
         self.root = _parse_xml(raw)
         self.ns = ns
 
@@ -183,7 +187,7 @@ class TestDocumentHeader:
     def test_subject_absent_when_none(self) -> None:
         doc = _build_doc_model(subject=False)
         root = _parse_xml(serialize_reserve_bid_document(doc))
-        ns = IEC_NAMESPACE
+        ns = IEC_NAMESPACE_V74
         el = root.find(f"{{{ns}}}subject_MarketParticipant.mRID")
         assert el is None
 
@@ -214,7 +218,7 @@ class TestBidTimeSeries:
     def setup_method(self) -> None:
         doc = _build_doc_model()
         raw = serialize_reserve_bid_document(doc)
-        ns = IEC_NAMESPACE
+        ns = IEC_NAMESPACE_V74
         self.root = _parse_xml(raw)
         self.ns = ns
         self.bts = self.root.find(f"{{{ns}}}Bid_TimeSeries")
@@ -243,7 +247,7 @@ class TestBidTimeSeries:
         assert el.get("codingScheme") == "A01"
 
     def test_quantity_measure_unit(self) -> None:
-        assert self._text("quantity_Measure_Unit.name") == "MAW"
+        assert self._text("quantity_Measurement_Unit.name") == "MAW"
 
     def test_currency_unit(self) -> None:
         assert self._text("currency_Unit.name") == "EUR"
@@ -270,7 +274,7 @@ class TestBidTimeSeries:
         assert self._text("flowDirection.direction") == "A01"
 
     def test_energy_price_measure_unit(self) -> None:
-        assert self._text("energyPrice_Measure_Unit.name") == "MWH"
+        assert self._text("energyPrice_Measurement_Unit.name") == "MWH"
 
     def test_standard_market_product_type(self) -> None:
         assert self._text("standard_MarketProduct.marketProductType") == "A07"
@@ -288,7 +292,7 @@ class TestPeriodElement:
     def setup_method(self) -> None:
         doc = _build_doc_model()
         raw = serialize_reserve_bid_document(doc)
-        ns = IEC_NAMESPACE
+        ns = IEC_NAMESPACE_V74
         root = _parse_xml(raw)
         bts = root.find(f"{{{ns}}}Bid_TimeSeries")
         assert bts is not None
@@ -374,7 +378,7 @@ class TestPeriodElement:
             bid_time_series=(bid,),
         )
         raw = serialize_reserve_bid_document(doc)
-        ns = IEC_NAMESPACE
+        ns = IEC_NAMESPACE_V74
         root = _parse_xml(raw)
         bts = root.find(f"{{{ns}}}Bid_TimeSeries")
         assert bts is not None
@@ -488,7 +492,7 @@ class TestElementOrdering:
     def test_bid_time_series_element_order(self) -> None:
         doc = _build_doc_model()
         raw = serialize_reserve_bid_document(doc)
-        ns = IEC_NAMESPACE
+        ns = IEC_NAMESPACE_V74
         root = _parse_xml(raw)
         bts = root.find(f"{{{ns}}}Bid_TimeSeries")
         assert bts is not None
@@ -508,7 +512,7 @@ class TestElementOrdering:
         assert pos("divisible") < pos("status")
         # status before flowDirection.direction
         assert pos("status") < pos("flowDirection.direction")
-        # flowDirection before energyPrice_Measure_Unit.name
-        assert pos("flowDirection.direction") < pos("energyPrice_Measure_Unit.name")
+        # flowDirection before energyPrice_Measurement_Unit.name (v7.4 long name)
+        assert pos("flowDirection.direction") < pos("energyPrice_Measurement_Unit.name")
         # standard_MarketProduct before Period
         assert pos("standard_MarketProduct.marketProductType") < pos("Period")

@@ -9,11 +9,8 @@ Key SVK specifics:
 - Minimum bid: 1 MW (common minimum)
 - Resource coding scheme: NSE (Swedish national identifiers)
 - Cut-off: 6 minutes (messages older than 6 min are silently dropped)
-- Heartbeat: every 5 minutes (at xx:02, xx:07, xx:12, …)
-- Missing heartbeat: bids unavailable for upcoming 2 quarters
 - Non-standard bids (A02): overbelastningshantering (overload handling), reason
   code Z74, indivisible, technically linked, activation time required
-- BSP can split activation response across multiple messages
 - Sender/resource coding scheme: NSE (Swedish national) or A01 (EIC)
 """
 
@@ -26,7 +23,6 @@ SVK_CONFIG: TSOConfig = TSOConfig(
     domain_mrid="10YSE-1--------K",
     min_bid_mw=1,
     max_bids_per_message=4000,
-    supports_heartbeat=True,
     supports_inclusive_bids=False,
     supports_period_shift=False,
     resource_coding_scheme="NSE",

@@ -23,10 +23,6 @@ def test_max_bids_per_message_is_2000() -> None:
     assert FINGRID_CONFIG.max_bids_per_message == 2000
 
 
-def test_no_heartbeat() -> None:
-    assert FINGRID_CONFIG.supports_heartbeat is False
-
-
 def test_supports_inclusive_bids() -> None:
     """Fingrid supports inclusive bids for aggregated resources."""
     assert FINGRID_CONFIG.supports_inclusive_bids is True

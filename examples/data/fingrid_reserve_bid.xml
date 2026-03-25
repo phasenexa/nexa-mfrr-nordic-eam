@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<ReserveBid_MarketDocument xmlns="urn:iec62325.351:tc57wg16:451-7:reservebiddocument:7:2">
-  <mRID>53155d19-d825-4619-8e34-cad03e88bf4c</mRID>
+<ReserveBid_MarketDocument xmlns="urn:iec62325.351:tc57wg16:451-7:reservebiddocument:7:4">
+  <mRID>d60a9a9e-141e-4dbf-b116-9794e26a6cc4</mRID>
   <revisionNumber>1</revisionNumber>
   <type>A37</type>
   <process.processType>A47</process.processType>
@@ -8,7 +8,7 @@
   <sender_MarketParticipant.marketRole.type>A46</sender_MarketParticipant.marketRole.type>
   <receiver_MarketParticipant.mRID codingScheme="A01">10X1001A1001A264</receiver_MarketParticipant.mRID>
   <receiver_MarketParticipant.marketRole.type>A34</receiver_MarketParticipant.marketRole.type>
-  <createdDateTime>2026-03-24T07:51:21Z</createdDateTime>
+  <createdDateTime>2026-03-25T09:23:01Z</createdDateTime>
   <reserveBid_Period.timeInterval>
     <start>2026-03-21T10:00Z</start>
     <end>2026-03-21T10:15Z</end>
@@ -17,12 +17,12 @@
   <subject_MarketParticipant.mRID codingScheme="A01">10XBSP-FI-001---A</subject_MarketParticipant.mRID>
   <subject_MarketParticipant.marketRole.type>A46</subject_MarketParticipant.marketRole.type>
   <Bid_TimeSeries>
-    <mRID>6f05b38a-3ef1-4eb2-aac4-e5c7e99d46a4</mRID>
+    <mRID>279fee2f-1d18-41ab-9f8e-0327e27d8cfc</mRID>
     <auction.mRID>MFRR_ENERGY_ACTIVATION_MARKET</auction.mRID>
     <businessType>B74</businessType>
     <acquiring_Domain.mRID codingScheme="A01">10Y1001A1001A91G</acquiring_Domain.mRID>
     <connecting_Domain.mRID codingScheme="A01">10YFI-1--------U</connecting_Domain.mRID>
-    <quantity_Measure_Unit.name>MAW</quantity_Measure_Unit.name>
+    <quantity_Measurement_Unit.name>MAW</quantity_Measurement_Unit.name>
     <currency_Unit.name>EUR</currency_Unit.name>
     <divisible>A01</divisible>
     <status>
@@ -30,7 +30,7 @@
     </status>
     <registeredResource.mRID codingScheme="A01">10XHYDRO-FI-001-A</registeredResource.mRID>
     <flowDirection.direction>A01</flowDirection.direction>
-    <energyPrice_Measure_Unit.name>MWH</energyPrice_Measure_Unit.name>
+    <energyPrice_Measurement_Unit.name>MWH</energyPrice_Measurement_Unit.name>
     <standard_MarketProduct.marketProductType>A07</standard_MarketProduct.marketProductType>
     <Period>
       <timeInterval>

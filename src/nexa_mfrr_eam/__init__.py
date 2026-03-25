@@ -1,8 +1,8 @@
 """nexa-mfrr-nordic-eam: Python library for Nordic mFRR EAM bid management.
 
-This library handles the full BSP workflow for the Nordic mFRR energy
-activation market: building bids, validating them, serializing to CIM XML,
-and parsing TSO responses.
+This library covers bid building, validation, CIM XML serialization and
+deserialization of ReserveBid_MarketDocument, and parsing of
+Acknowledgement_MarketDocument responses.
 
 Quickstart::
 
@@ -53,6 +53,7 @@ from nexa_mfrr_eam.types import (
     ProductionType,
 )
 from nexa_mfrr_eam.xml.deserialize import deserialize_reserve_bid_document
+from nexa_mfrr_eam.xml.namespaces import SchemaVersion
 
 __version__ = "0.3.0b1"
 
@@ -77,6 +78,7 @@ __all__ = [
     "BidDocument",
     "BuiltBidDocument",
     "deserialize_reserve_bid_document",
+    "SchemaVersion",
     # Internal models (needed for type annotations on parsed results)
     "BidDocumentModel",
     # Enums
